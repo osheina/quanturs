@@ -1,6 +1,10 @@
 import SearchBar from "@/components/SearchBar";
 import HotelCard from "@/components/HotelCard";
 import VRExperienceCard from "@/components/VRExperienceCard";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Bot, Leaf, UtensilsCrossed, MapPin } from "lucide-react";
 
 const Index = () => {
   const hotels = [
@@ -53,10 +57,10 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 text-center text-white space-y-6 px-4">
           <h1 className="text-5xl font-bold animate-fade-down">
-            Discover Eco-Friendly Destinations
+            Experience Sustainable Travel with AI
           </h1>
           <p className="text-xl max-w-2xl mx-auto animate-fade-up">
-            Experience sustainable travel with virtual tours and eco-conscious accommodations
+            Discover personalized eco-friendly destinations with AI-powered guides and virtual tours
           </p>
           <div className="animate-fade-up">
             <SearchBar />
@@ -64,23 +68,107 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Eco Hotels */}
+      {/* AI Personalization Section */}
       <section className="py-16 px-4 container mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-primary">Featured Eco Hotels</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hotels.map((hotel, index) => (
-            <HotelCard key={index} {...hotel} />
-          ))}
+        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Bot className="w-8 h-8 text-primary" />
+            <h2 className="text-2xl font-bold text-primary">Create Your AI-Powered Travel Guide</h2>
+          </div>
+          <p className="text-gray-600 mb-8">
+            Tell us your preferences, and our AI will craft the perfect sustainable travel itinerary for you.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Dietary Preferences" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="vegan">Vegan</SelectItem>
+                <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                <SelectItem value="gluten-free">Gluten-Free</SelectItem>
+                <SelectItem value="none">No Preference</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Activity Level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="adventure">Adventure</SelectItem>
+                <SelectItem value="relaxation">Relaxation</SelectItem>
+                <SelectItem value="cultural">Cultural</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button className="w-full">Generate My Guide</Button>
+          </div>
         </div>
       </section>
 
-      {/* VR Experiences */}
+      {/* Main Content Tabs */}
       <section className="py-16 px-4 container mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-primary">Virtual Reality Experiences</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vrExperiences.map((experience, index) => (
-            <VRExperienceCard key={index} {...experience} />
-          ))}
+        <Tabs defaultValue="stays" className="w-full">
+          <TabsList className="w-full max-w-md mx-auto grid grid-cols-3">
+            <TabsTrigger value="stays" className="flex items-center gap-2">
+              <Leaf className="w-4 h-4" />
+              Eco Stays
+            </TabsTrigger>
+            <TabsTrigger value="dining" className="flex items-center gap-2">
+              <UtensilsCrossed className="w-4 h-4" />
+              Dining
+            </TabsTrigger>
+            <TabsTrigger value="activities" className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Activities
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="stays" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hotels.map((hotel, index) => (
+                <HotelCard key={index} {...hotel} />
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="dining" className="mt-8">
+            <div className="text-center text-gray-500">
+              Coming soon: Discover sustainable and eco-friendly dining options
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="activities" className="mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vrExperiences.map((experience, index) => (
+                <VRExperienceCard key={index} {...experience} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 px-4 container mx-auto bg-primary/5 rounded-3xl">
+        <h2 className="text-3xl font-bold text-center text-primary mb-12">What Our Travelers Say</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <p className="text-gray-600 italic mb-4">
+              "The AI-powered recommendations were spot-on! Found amazing vegan restaurants I wouldn't have discovered otherwise."
+            </p>
+            <p className="font-semibold">- Sarah M.</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <p className="text-gray-600 italic mb-4">
+              "Virtual tours helped me plan my trip better. It's like being there before actually going!"
+            </p>
+            <p className="font-semibold">- James R.</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <p className="text-gray-600 italic mb-4">
+              "Love how easy it is to find eco-friendly accommodations. Makes sustainable travel so much simpler."
+            </p>
+            <p className="font-semibold">- Emma L.</p>
+          </div>
         </div>
       </section>
     </div>
