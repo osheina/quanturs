@@ -2,10 +2,10 @@ import { Canvas } from "@react-three/fiber";
 import { VRButton, XR, createXRStore } from "@react-three/xr";
 import { Environment, OrbitControls } from "@react-three/drei";
 
-const VRScene = () => {
-  // Create an XR store instance
-  const store = createXRStore();
+// Create a single store instance outside the component
+const store = createXRStore();
 
+const VRScene = () => {
   return (
     <div className="h-[500px] w-full relative">
       <VRButton />
