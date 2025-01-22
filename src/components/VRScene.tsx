@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { VRButton, XR, Controllers, Hands } from "@react-three/xr";
+import { VRButton, XR } from "@react-three/xr";
 import { Environment, OrbitControls } from "@react-three/drei";
 
 const VRScene = () => {
@@ -8,8 +8,6 @@ const VRScene = () => {
       <VRButton />
       <Canvas>
         <XR>
-          <Controllers />
-          <Hands />
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 10]} />
           <mesh position={[0, 0, -5]}>
