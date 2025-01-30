@@ -1,10 +1,9 @@
 import SearchBar from "@/components/SearchBar";
 import HotelCard from "@/components/HotelCard";
 import VRExperienceCard from "@/components/VRExperienceCard";
-import { Button } from "@/components/ui/button";
+import AIGuideSection from "@/components/AIGuideSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bot, Leaf, UtensilsCrossed, MapPin } from "lucide-react";
+import { Leaf, UtensilsCrossed, MapPin } from "lucide-react";
 
 const Index = () => {
   const hotels = [
@@ -68,41 +67,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* AI Personalization Section */}
+      {/* AI Guide Section */}
       <section className="py-16 px-4 container mx-auto">
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Bot className="w-8 h-8 text-primary" />
-            <h2 className="text-2xl font-bold text-primary">Create Your AI-Powered Travel Guide</h2>
-          </div>
-          <p className="text-gray-600 mb-8">
-            Tell us your preferences, and our AI will craft the perfect sustainable travel itinerary for you.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Dietary Preferences" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="vegan">Vegan</SelectItem>
-                <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                <SelectItem value="gluten-free">Gluten-Free</SelectItem>
-                <SelectItem value="none">No Preference</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Activity Level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="adventure">Adventure</SelectItem>
-                <SelectItem value="relaxation">Relaxation</SelectItem>
-                <SelectItem value="cultural">Cultural</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button className="w-full">Generate My Guide</Button>
-          </div>
-        </div>
+        <AIGuideSection />
       </section>
 
       {/* Main Content Tabs */}
