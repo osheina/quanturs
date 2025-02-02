@@ -3,7 +3,8 @@ import HotelCard from "@/components/HotelCard";
 import VRExperienceCard from "@/components/VRExperienceCard";
 import AIGuideSection from "@/components/AIGuideSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Leaf, UtensilsCrossed, MapPin } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Leaf, UtensilsCrossed, MapPin, Star } from "lucide-react";
 
 const Index = () => {
   const hotels = [
@@ -46,6 +47,41 @@ const Index = () => {
       title: "Northern Lights",
       duration: "60-minute",
     },
+  ];
+
+  const restaurants = [
+    {
+      image: "https://images.unsplash.com/photo-1552566626-52f8b828add9",
+      name: "Verde - Plant-Based Kitchen",
+      cuisine: "Vegan Fine Dining",
+      rating: 4.8,
+      priceRange: "$$$",
+      description: "Innovative vegan cuisine in an elegant setting with seasonal ingredients",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+      name: "Bistro Moderne",
+      cuisine: "Contemporary French",
+      rating: 4.9,
+      priceRange: "$$$$",
+      description: "Classic French dishes with a modern twist in an art deco atmosphere",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
+      name: "Sky Lounge",
+      cuisine: "International Fusion",
+      rating: 4.7,
+      priceRange: "$$$$",
+      description: "Panoramic city views with innovative fusion cuisine",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b",
+      name: "Rustic & Raw",
+      cuisine: "Mediterranean",
+      rating: 4.6,
+      priceRange: "$$$",
+      description: "Farm-to-table Mediterranean dishes in a cozy atmosphere",
+    }
   ];
 
   return (
@@ -99,8 +135,32 @@ const Index = () => {
           </TabsContent>
           
           <TabsContent value="dining" className="mt-8">
-            <div className="text-center text-gray-500">
-              Coming soon: Discover sustainable and eco-friendly dining options
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {restaurants.map((restaurant, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="aspect-video relative overflow-hidden">
+                    <img 
+                      src={restaurant.image} 
+                      alt={restaurant.name}
+                      className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-xl">{restaurant.name}</CardTitle>
+                    <CardDescription className="flex items-center justify-between">
+                      <span>{restaurant.cuisine}</span>
+                      <span className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        {restaurant.rating}
+                      </span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-2">{restaurant.description}</p>
+                    <p className="text-sm font-semibold text-primary">{restaurant.priceRange}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
           
