@@ -1,17 +1,17 @@
 
 import { Canvas } from "@react-three/fiber";
-import { VRButton, XR, createXRStore } from "@react-three/xr";
+import { VRButton, XR, XRStore, createXRStore } from "@react-three/xr";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { useState } from "react";
 
 const VRScene = () => {
-  const [store] = useState(() => createXRStore());
+  const [xrStore] = useState<XRStore>(() => createXRStore());
 
   return (
     <div className="h-[500px] w-full relative">
       <VRButton />
       <Canvas>
-        <XR store={store}>
+        <XR store={xrStore}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 10]} />
           <mesh position={[0, 0, -5]}>
