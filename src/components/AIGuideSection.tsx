@@ -1,3 +1,4 @@
+
 import { Bot, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -9,26 +10,26 @@ const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
   const { toast } = useToast();
   const [placeholder, setPlaceholder] = useState<string>(
-    "Plan a 3-day wellness retreat in the Swiss Alps with vegan and gluten-free meal options."
+    "Plan a 3-day wellness tour in Los Angeles with vegan restaurants"
   );
 
   const premadeGuides = [
     {
-      title: "Эко-тур по Швейцарским Альпам",
-      description: "3-дневный маршрут с веганским питанием",
+      title: "LA Vegan Food Tour",
+      description: "3-day culinary adventure through the best vegan spots",
       downloadUrl: "#"
     },
     {
-      title: "Культурный тур по Барселоне",
-      description: "Веганские тапас и лучшие места",
+      title: "Hollywood & Beverly Hills",
+      description: "Eco-friendly tour of iconic LA landmarks",
       downloadUrl: "#"
     }
   ];
 
   // Rotate through example prompts
   const examples = [
-    "Plan a 3-day wellness retreat in the Swiss Alps with vegan and gluten-free meal options.",
-    "Discover boutique hotels in Barcelona with vegan tapas recommendations."
+    "Plan a 3-day wellness tour in Los Angeles with vegan restaurants",
+    "Discover boutique hotels in Santa Monica with ocean views"
   ];
 
   const rotateExample = () => {
@@ -39,8 +40,8 @@ const AIGuideSection = () => {
 
   const handleDownload = (guide: typeof premadeGuides[0]) => {
     toast({
-      title: "Загрузка гайда",
-      description: `Загрузка "${guide.title}" начата...`,
+      title: "Downloading Guide",
+      description: `Starting download for "${guide.title}"...`,
     });
   };
 
@@ -48,16 +49,16 @@ const AIGuideSection = () => {
     e.preventDefault();
     if (!prompt.trim()) {
       toast({
-        title: "Пожалуйста, введите ваши предпочтения",
-        description: "Расскажите, какое путешествие вы планируете!",
+        title: "Please enter your preferences",
+        description: "Tell us what kind of journey you're planning!",
         variant: "destructive",
       });
       return;
     }
     
     toast({
-      title: "Создаем ваш гайд...",
-      description: "Наш ИИ создает идеальный эко-маршрут для вас.",
+      title: "Creating your guide...",
+      description: "Our AI is crafting the perfect eco-friendly itinerary for you.",
     });
   };
 
@@ -65,11 +66,11 @@ const AIGuideSection = () => {
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
       <div className="flex items-center gap-3 mb-4">
         <Bot className="w-8 h-8 text-primary" />
-        <h2 className="text-2xl font-bold text-primary">Создайте свой AI-гайд по путешествиям</h2>
+        <h2 className="text-2xl font-bold text-primary">Create Your AI Travel Guide</h2>
       </div>
       
       <p className="text-gray-600 mb-6">
-        Расскажите о своих предпочтениях, и наш ИИ создаст идеальный эко-маршрут для вас.
+        Share your preferences, and our AI will create the perfect eco-friendly itinerary for you.
       </p>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,12 +88,12 @@ const AIGuideSection = () => {
           type="submit" 
           className="w-full py-6 text-lg rounded-xl bg-primary hover:bg-primary/90 transition-colors"
         >
-          Создать мой гайд
+          Create My Guide
         </Button>
       </form>
 
       <div className="mt-12">
-        <h3 className="text-xl font-semibold mb-6">Готовые гайды</h3>
+        <h3 className="text-xl font-semibold mb-6">Ready-made Guides</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {premadeGuides.map((guide, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
@@ -107,7 +108,7 @@ const AIGuideSection = () => {
                   className="w-full"
                 >
                   <Download className="mr-2" />
-                  Скачать гайд
+                  Download Guide
                 </Button>
               </CardContent>
             </Card>
@@ -119,3 +120,4 @@ const AIGuideSection = () => {
 };
 
 export default AIGuideSection;
+
