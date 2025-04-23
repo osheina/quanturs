@@ -1,8 +1,9 @@
-import { Bot } from "lucide-react";
+import { Bot, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
@@ -10,6 +11,19 @@ const AIGuideSection = () => {
   const [placeholder, setPlaceholder] = useState<string>(
     "Plan a 3-day wellness retreat in the Swiss Alps with vegan and gluten-free meal options."
   );
+
+  const premadeGuides = [
+    {
+      title: "Эко-тур по Швейцарским Альпам",
+      description: "3-дневный маршрут с веганским питанием",
+      downloadUrl: "#"
+    },
+    {
+      title: "Культурный тур по Барселоне",
+      description: "Веганские тапас и лучшие места",
+      downloadUrl: "#"
+    }
+  ];
 
   // Rotate through example prompts
   const examples = [
@@ -23,33 +37,41 @@ const AIGuideSection = () => {
     setPlaceholder(examples[nextIndex]);
   };
 
+  const handleDownload = (guide: typeof premadeGuides[0]) => {
+    toast({
+      title: "Загрузка гайда",
+      description: `Загрузка "${guide.title}" начата...`,
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt.trim()) {
       toast({
-        title: "Please enter your travel preferences",
-        description: "Tell us what kind of trip you're looking for!",
+        title: "Пожалуйста, введите ваши предпочтения",
+        description: "Расскажите, какое путешествие вы планируете!",
         variant: "destructive",
       });
       return;
     }
     
     toast({
-      title: "Generating your guide...",
-      description: "Our AI is crafting the perfect sustainable travel itinerary for you.",
+      title: "Создаем ваш гайд...",
+      description: "Наш ИИ создает идеальный эко-маршрут для вас.",
     });
-    // Here you would typically make an API call to generate the guide
   };
 
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
       <div className="flex items-center gap-3 mb-4">
         <Bot className="w-8 h-8 text-primary" />
-        <h2 className="text-2xl font-bold text-primary">Create Your AI-Powered Travel Guide</h2>
+        <h2 className="text-2xl font-bold text-primary">Создайте свой AI-гайд по путешествиям</h2>
       </div>
+      
       <p className="text-gray-600 mb-6">
-        Tell us your preferences, and our AI will craft the perfect sustainable travel itinerary for you.
+        Расскажите о своих предпочтениях, и наш ИИ создаст идеальный эко-маршрут для вас.
       </p>
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Input
@@ -65,9 +87,33 @@ const AIGuideSection = () => {
           type="submit" 
           className="w-full py-6 text-lg rounded-xl bg-primary hover:bg-primary/90 transition-colors"
         >
-          Generate My Guide
+          Создать мой гайд
         </Button>
       </form>
+
+      <div className="mt-12">
+        <h3 className="text-xl font-semibold mb-6">Готовые гайды</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {premadeGuides.map((guide, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-lg">{guide.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{guide.description}</p>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleDownload(guide)}
+                  className="w-full"
+                >
+                  <Download className="mr-2" />
+                  Скачать гайд
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,11 +1,11 @@
 
 import { Canvas } from "@react-three/fiber";
-import { VRButton, XR, XRStore, createXRStore } from "@react-three/xr";
+import { VRButton, XR, createXRStore } from "@react-three/xr";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { useState } from "react";
 
 const VRScene = () => {
-  const [xrStore] = useState<XRStore>(() => createXRStore());
+  const [xrStore] = useState(() => createXRStore());
 
   return (
     <div className="h-[500px] w-full relative">
@@ -27,3 +27,4 @@ const VRScene = () => {
 };
 
 export default VRScene;
+
