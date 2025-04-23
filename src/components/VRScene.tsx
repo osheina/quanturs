@@ -1,11 +1,12 @@
-import { Canvas } from "@react-three/fiber";
-import { VRButton, XR, createXRStore } from "@react-three/xr";
-import { Environment, OrbitControls } from "@react-three/drei";
 
-// Create a single store instance outside the component
-const store = createXRStore();
+import { Canvas } from "@react-three/fiber";
+import { VRButton, XR, XRStore, createXRStore } from "@react-three/xr";
+import { Environment, OrbitControls } from "@react-three/drei";
+import { useState } from "react";
 
 const VRScene = () => {
+  const [store] = useState(() => createXRStore());
+
   return (
     <div className="h-[500px] w-full relative">
       <VRButton />
