@@ -1,3 +1,4 @@
+
 import SearchBar from "@/components/SearchBar";
 import HotelCard from "@/components/HotelCard";
 import VRExperienceCard from "@/components/VRExperienceCard";
@@ -86,16 +87,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Hero Section */}
+      {/* Hero Section with Qanturs Branding */}
       <section className="relative h-[70vh] flex items-center justify-center bg-cover bg-center" 
                style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1469474968028-56623f02e42e)' }}>
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 text-center text-white space-y-6 px-4">
-          <h1 className="text-5xl font-bold animate-fade-down">
-            Experience Sustainable Travel with AI
+          <h1 className="text-4xl md:text-5xl font-bold animate-fade-down">
+            Qanturs: Travel Intelligently
           </h1>
-          <p className="text-xl max-w-2xl mx-auto animate-fade-up">
-            Discover personalized eco-friendly destinations with AI-powered guides and virtual tours
+          <p className="text-lg md:text-xl max-w-2xl mx-auto animate-fade-up">
+            Sustainable, AI-powered travel experiences tailored to your values and lifestyle
           </p>
           <div className="animate-fade-up">
             <SearchBar />
@@ -203,3 +204,4 @@ const Index = () => {
 };
 
 export default Index;
+

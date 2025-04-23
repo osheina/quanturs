@@ -11,7 +11,7 @@ const VRScene = () => {
     <div className="h-[500px] w-full relative">
       <VRButton />
       <Canvas>
-        <XR store={xrStore}>
+        <XR store={xrStore} mode="inline">
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 10]} />
           <mesh position={[0, 0, -5]}>
@@ -27,3 +27,4 @@ const VRScene = () => {
 };
 
 export default VRScene;
+
