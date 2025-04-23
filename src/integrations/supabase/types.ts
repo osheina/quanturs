@@ -14,6 +14,7 @@ export type Database = {
           diet_tags: string | null
           id: number
           location: string | null
+          name: string | null
           notes: string | null
           type: string
           vibe: string | null
@@ -22,6 +23,7 @@ export type Database = {
           diet_tags?: string | null
           id?: number
           location?: string | null
+          name?: string | null
           notes?: string | null
           type: string
           vibe?: string | null
@@ -30,6 +32,7 @@ export type Database = {
           diet_tags?: string | null
           id?: number
           location?: string | null
+          name?: string | null
           notes?: string | null
           type?: string
           vibe?: string | null
