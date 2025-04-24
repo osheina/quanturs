@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
@@ -85,7 +84,13 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
           ? ["1 Hotel West Hollywood", "Terranea Resort", "Shore Hotel Santa Monica"] 
           : ["Eco Lodge", "Green Hotel", "Sustainable Resort"],
         transportation: isLosAngeles 
-          ? ["Tesla Rental", "EVRentals LA", "Bird/Lime scooters for short distances"] 
+          ? [
+              "Tesla Rental Services",
+              "Waymo Autonomous Taxis",
+              "Cruise Self-Driving Vehicles",
+              "Bird/Lime Electric Scooters",
+              "Metro Rail System"
+            ] 
           : ["Public transit", "Bike rentals", "Walking tours"]
       }
     };
