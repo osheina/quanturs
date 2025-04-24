@@ -39,6 +39,39 @@ export type Database = {
         }
         Relationships: []
       }
+      travel_guides: {
+        Row: {
+          content: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_premade: boolean | null
+          prompt: string
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premade?: boolean | null
+          prompt: string
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premade?: boolean | null
+          prompt?: string
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

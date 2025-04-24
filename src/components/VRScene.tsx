@@ -1,11 +1,11 @@
 
-import { useXR, XR } from "@react-three/xr";
+import { Interactive, useXR, XR } from "@react-three/xr";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { Suspense } from "react";
 
 const VRScene = ({ sceneName }: { sceneName: string }) => {
-  const { isPresenting, enterXR } = useXR();
+  const xr = useXR();
 
   return (
     <div className="relative h-full w-full">
@@ -21,9 +21,9 @@ const VRScene = ({ sceneName }: { sceneName: string }) => {
           </Suspense>
         </XR>
       </Canvas>
-      {!isPresenting && (
+      {!xr.isPresenting && (
         <button
-          onClick={enterXR}
+          onClick={() => xr.enterXR()}
           className="absolute bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-lg"
         >
           Enter VR

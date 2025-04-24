@@ -1,3 +1,4 @@
+
 import { Box } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,7 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
 
       <Dialog open={showVR} onOpenChange={setShowVR}>
         <DialogContent className="max-w-4xl h-[600px] p-0">
-          <VRScene />
+          <VRScene sceneName={title} />
         </DialogContent>
       </Dialog>
     </>
