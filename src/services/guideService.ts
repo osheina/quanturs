@@ -1,51 +1,48 @@
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
+/* ----------  AI generator (mock) ---------- */
 export async function generateAIGuide(prompt: string): Promise<TravelGuide | null> {
   try {
-    // In a real application, there would be a request to an Edge Function
-    // that uses the OpenAI API or another AI service
-    
-    // Simulating an AI response for testing without API keys
-    const guideTitle = `Guide for: ${prompt.slice(0, 30)}${prompt.length > 30 ? '...' : ''}`;
-    
-    // Determine if the request includes Los Angeles
-    const isLosAngeles = prompt.toLowerCase().includes('los angeles') || prompt.toLowerCase().includes('la ');
-    
-    // Create basic guide content
-    let content = {
+    // Simulated AI response (no API keys needed for now)
+    const guideTitle = `Guide for: ${prompt.slice(0, 30)}${prompt.length > 30 ? "…" : ""}`;
+
+    const isLosAngeles =
+      prompt.toLowerCase().includes("los angeles") ||
+      prompt.toLowerCase().includes("la ");
+
+    /* --- basic content scaffold --- */
+    const content = {
       days: [
         {
           title: "Day 1",
           activities: [
             {
               time: "9:00 AM",
-              activity: isLosAngeles 
-                ? "Start your day with breakfast at Cafe Gratitude" 
-                : "Start your day with breakfast at a local eco-friendly cafe",
+              activity: isLosAngeles
+                ? "Breakfast at Cafe Gratitude"
+                : "Breakfast at a local eco-friendly café",
               location: isLosAngeles ? "Venice" : "Downtown",
-              notes: isLosAngeles 
-                ? "Known for their plant-based cuisine and positive atmosphere" 
+              notes: isLosAngeles
+                ? "Famous plant-based cuisine and positive atmosphere"
                 : "Try their organic coffee and vegan options"
             },
             {
               time: "11:00 AM",
-              activity: isLosAngeles 
-                ? "Visit the Santa Monica Farmers Market" 
+              activity: isLosAngeles
+                ? "Santa Monica Farmers Market"
                 : "Visit the local farmers market",
-              location: isLosAngeles ? "Arizona Avenue, Santa Monica" : "Central Park",
-              notes: isLosAngeles 
-                ? "One of LA's best markets with local produce and artisanal goods" 
+              location: isLosAngeles ? "Arizona Ave, Santa Monica" : "Main Square",
+              notes: isLosAngeles
+                ? "Top LA market with local produce and artisanal goods"
                 : "Great place to meet locals and buy fresh produce"
             },
             {
               time: "2:00 PM",
-              activity: isLosAngeles 
-                ? "Explore the Getty Center" 
-                : "Sustainable city tour",
-              location: isLosAngeles ? "1200 Getty Center Dr." : "City Center",
-              notes: isLosAngeles 
-                ? "Beautiful architecture, gardens, and stunning city views" 
+              activity: isLosAngeles ? "Explore the Getty Center" : "City sustainability tour",
+              location: isLosAngeles ? "1200 Getty Center Dr" : "City Center",
+              notes: isLosAngeles
+                ? "Architecture, gardens and stunning city views"
                 : "Learn about local eco-friendly initiatives"
             }
           ]
@@ -55,297 +52,288 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
           activities: [
             {
               time: "10:00 AM",
-              activity: isLosAngeles 
-                ? "Hiking in Runyon Canyon Park" 
-                : "Hiking in nature reserve",
-              location: isLosAngeles ? "2000 N Fuller Ave, Hollywood" : "Outside city",
-              notes: isLosAngeles 
-                ? "Popular trail with spectacular views of the LA skyline" 
-                : "Beautiful trails with diverse flora and fauna"
+              activity: isLosAngeles
+                ? "Hike Runyon Canyon Park"
+                : "Hike in a nearby nature reserve",
+              location: isLosAngeles ? "Hollywood" : "Nature Reserve",
+              notes: isLosAngeles
+                ? "Popular trail with great skyline views"
+                : "Scenic trail with diverse flora and fauna"
             },
             {
               time: "3:00 PM",
-              activity: isLosAngeles 
-                ? "Visit The Grove & Original Farmers Market" 
-                : "Visit to sustainable businesses",
+              activity: isLosAngeles
+                ? "The Grove & Original Farmers Market"
+                : "Tour sustainable local businesses",
               location: isLosAngeles ? "189 The Grove Dr" : "Various locations",
-              notes: isLosAngeles 
-                ? "Shopping, dining and entertainment in an outdoor setting" 
-                : "See how local businesses implement eco-friendly practices"
+              notes: isLosAngeles
+                ? "Outdoor shopping, dining and entertainment"
+                : "See how local businesses implement eco practices"
             }
           ]
         }
       ],
       recommendations: {
-        restaurants: isLosAngeles 
-          ? ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"] 
+        restaurants: isLosAngeles
+          ? ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"]
           : ["Organic Delights", "Green Plate", "Nature's Kitchen"],
-        accommodations: isLosAngeles 
-          ? ["1 Hotel West Hollywood", "Terranea Resort", "Shore Hotel Santa Monica"] 
+        accommodations: isLosAngeles
+          ? ["1 Hotel West Hollywood", "Shore Hotel Santa Monica", "Cara Hotel"]
           : ["Eco Lodge", "Green Hotel", "Sustainable Resort"],
-        transportation: isLosAngeles 
+        transportation: isLosAngeles
           ? [
+              "Metro Rail System",
               "Tesla Rental Services",
               "Waymo Autonomous Taxis",
-              "Cruise Self-Driving Vehicles",
-              "Bird/Lime Electric Scooters",
-              "Metro Rail System"
-            ] 
+              "Lime/Bird Scooters"
+            ]
           : ["Public transit", "Bike rentals", "Walking tours"]
       }
     };
 
     if (isLosAngeles) {
-      // Add specific places for Los Angeles
       content.days.push({
         title: "Day 3",
         activities: [
           {
             time: "9:30 AM",
-            activity: "Visit the Venice Canals",
+            activity: "Stroll the Venice Canals",
             location: "Venice",
-            notes: "Scenic walkways along canals inspired by Venice, Italy"
+            notes: "Picturesque walkways inspired by Venice, Italy"
           },
           {
             time: "1:00 PM",
-            activity: "Lunch at Sage Plant Based Bistro",
+            activity: "Lunch at Sage Plant-Based Bistro",
             location: "Echo Park",
-            notes: "Delicious plant-based food with outdoor seating"
+            notes: "Delicious plant-based menu with outdoor seating"
           },
           {
             time: "4:00 PM",
             activity: "Sunset at Griffith Observatory",
             location: "2800 E Observatory Rd",
-            notes: "Spectacular views of the city and stars"
+            notes: "Spectacular city views and free telescopes"
           }
         ]
       });
     }
 
-    // Create entry in database
+    /* --- write to DB --- */
     const newGuide: TravelGuide = {
       title: guideTitle,
-      prompt: prompt,
+      prompt,
       content: JSON.stringify(content),
       is_premade: false,
-      description: `Personalized eco-friendly itinerary based on: "${prompt}"`
+      description: `Personalized eco-friendly itinerary based on: “${prompt}”`
     };
 
     const { data, error } = await supabase
-      .from('travel_guides')
+      .from("travel_guides")
       .insert(newGuide)
       .select()
       .single();
 
     if (error) throw error;
     return data;
-  } catch (error) {
-    console.error("Error generating AI guide:", error);
+  } catch (e) {
+    console.error("Error generating AI guide:", e);
     return null;
   }
 }
 
+/* ----------  premade guides (EN) ---------- */
 export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
   try {
-    // Define two premade guides for Los Angeles
     const premadeGuides: TravelGuide[] = [
       {
         id: "la-vegan-weekend",
         title: "Vegan Weekend in Los Angeles",
-        prompt: "Weekend plan in Los Angeles with vegan restaurants",
+        prompt: "Vegan food & eco highlights in LA",
         content: JSON.stringify({
           days: [
             {
-              title: "Day 1 - Venice and Santa Monica",
+              title: "Day 1 – Venice & Santa Monica",
               activities: [
                 {
                   time: "9:00 AM",
                   activity: "Breakfast at Cafe Gratitude",
-                  location: "Venice, Los Angeles",
-                  notes: "Start your day with organic, plant-based breakfast"
+                  location: "Venice",
+                  notes: "Organic, plant-based favorites"
                 },
                 {
                   time: "11:00 AM",
                   activity: "Santa Monica Farmers Market",
-                  location: "Arizona Avenue, Santa Monica",
-                  notes: "Shop for fresh local produce and artisanal goods"
+                  location: "Arizona Ave, Santa Monica",
+                  notes: "Local produce and artisanal goods"
                 },
                 {
                   time: "2:00 PM",
                   activity: "Lunch at Plant Food + Wine",
-                  location: "Venice, Los Angeles",
-                  notes: "Upscale vegan dining with a beautiful garden"
+                  location: "Venice",
+                  notes: "Upscale vegan dining with garden patio"
                 }
               ]
             },
             {
-              title: "Day 2 - Hollywood and Beverly Hills",
+              title: "Day 2 – Hollywood & Beverly Hills",
               activities: [
                 {
                   time: "10:00 AM",
-                  activity: "Hike at Runyon Canyon",
+                  activity: "Hike Runyon Canyon",
                   location: "Hollywood",
                   notes: "Morning hike with city views"
                 },
                 {
                   time: "1:00 PM",
                   activity: "Lunch at Crossroads Kitchen",
-                  location: "Melrose, Los Angeles",
-                  notes: "Celebrity chef Tal Ronnen's upscale vegan restaurant"
+                  location: "Melrose",
+                  notes: "Chef Tal Ronnen’s iconic vegan restaurant"
                 },
                 {
                   time: "4:00 PM",
                   activity: "Shopping at Erewhon Market",
                   location: "Beverly Hills",
-                  notes: "Luxury health food market with prepared foods"
+                  notes: "Luxury health-food market"
                 }
               ]
             }
           ],
           recommendations: {
             restaurants: [
-              "Cafe Gratitude - Venice",
-              "Crossroads Kitchen - Melrose",
-              "Plant Food + Wine - Venice",
-              "Gracias Madre - West Hollywood"
+              "Cafe Gratitude – Venice",
+              "Crossroads Kitchen – Melrose",
+              "Plant Food + Wine – Venice",
+              "Gracias Madre – West Hollywood"
             ],
             accommodations: [
-              "1 Hotel West Hollywood - Eco-luxury",
-              "Shore Hotel Santa Monica - Ocean view, LEED certified"
+              "1 Hotel West Hollywood – Eco-luxury",
+              "Shore Hotel Santa Monica – LEED Gold"
             ],
-            transportation: [
-              "Metro Expo Line",
-              "Bird/Lime Electric Scooters",
-              "Walking in Venice/Santa Monica"
-            ]
+            transportation: ["Metro Expo Line", "Lime/Bird Scooters", "Walking"]
           }
         }),
         is_premade: true,
-        description: "Perfect weekend exploring LA's best vegan spots and eco-friendly activities"
+        description: "Two-day plant-based itinerary featuring LA’s top vegan spots"
       },
       {
         id: "la-eco-adventure",
         title: "Sustainable Los Angeles Adventure",
-        prompt: "Eco-friendly weekend in Los Angeles",
+        prompt: "Eco-friendly weekend in LA",
         content: JSON.stringify({
           days: [
             {
-              title: "Day 1 - Sustainability Tour",
+              title: "Day 1 – Urban Sustainability",
               activities: [
                 {
                   time: "9:00 AM",
-                  activity: "Breakfast at Little Pine Restaurant",
-                  location: "Silver Lake, Los Angeles",
-                  notes: "100% vegan restaurant owned by Moby, donates all profits to animal rights organizations"
+                  activity: "Breakfast at Little Pine",
+                  location: "Silver Lake",
+                  notes: "100 % vegan; profits to animal rights"
                 },
                 {
                   time: "11:00 AM",
-                  activity: "LA River Bike Path Exploration",
+                  activity: "Bike the LA River Path",
                   location: "Elysian Park",
-                  notes: "Eco-friendly bike tour highlighting urban sustainability efforts"
+                  notes: "Urban ride showcasing revitalization efforts"
                 },
                 {
                   time: "2:00 PM",
-                  activity: "Visit Tongva Park",
+                  activity: "Explore Tongva Park",
                   location: "Santa Monica",
-                  notes: "Sustainable urban park design showcasing environmental conservation"
+                  notes: "Sustainable landscape architecture"
                 }
               ]
             },
             {
-              title: "Day 2 - Green Living Experience",
+              title: "Day 2 – Green Living",
               activities: [
                 {
                   time: "10:00 AM",
-                  activity: "Community Farmers Market",
-                  location: "Hollywood Farmers' Market",
-                  notes: "Support local, organic farmers and sustainable agriculture"
+                  activity: "Hollywood Farmers Market",
+                  location: "Hollywood",
+                  notes: "Support local organic farmers"
                 },
                 {
                   time: "1:00 PM",
-                  activity: "Zero Waste Shopping at Refill Madness",
+                  activity: "Zero-Waste Shopping at Refill Madness",
                   location: "Mar Vista",
-                  notes: "Shop for eco-friendly, package-free household and personal care items"
+                  notes: "Package-free household goods"
                 },
                 {
                   time: "4:00 PM",
                   activity: "Sunset at Ballona Wetlands",
                   location: "Playa Del Rey",
-                  notes: "Learn about local ecosystem conservation and enjoy nature"
+                  notes: "Learn about coastal ecosystem conservation"
                 }
               ]
             }
           ],
           recommendations: {
             restaurants: [
-              "Little Pine Restaurant - Silver Lake",
-              "Sage Plant Based Bistro - Echo Park",
-              "The Organic Vault - Venice",
-              "Ramen Hood - Arts District"
+              "Little Pine – Silver Lake",
+              "Sage Plant-Based Bistro – Echo Park",
+              "Ramen Hood – Arts District"
             ],
             accommodations: [
-              "1 Hotel West Hollywood - Sustainable luxury",
-              "The Kinney Venice Beach - Eco-friendly boutique hotel"
+              "1 Hotel West Hollywood – Sustainable luxury",
+              "The Kinney Venice Beach – Eco-friendly boutique"
             ],
             transportation: [
               "Metro Bike Share",
-              "Electric Scooter Rentals",
-              "Walking tours",
-              "Hybrid/Electric Vehicle Rentals"
+              "Electric Scooters",
+              "Hybrid/Electric Car Rental"
             ]
           }
         }),
         is_premade: true,
-        description: "An immersive eco-friendly journey through Los Angeles' sustainable hotspots"
+        description: "Eco-conscious highlights: zero-waste shops, farmers markets & wetlands"
       }
     ];
 
-    // First try to get guides from Supabase
-    const { data: existingGuides, error } = await supabase
-      .from('travel_guides')
-      .select('*')
-      .eq('is_premade', true);
+    /* --- fetch existing premades --- */
+    const { data: existing, error } = await supabase
+      .from("travel_guides")
+      .select("*")
+      .eq("is_premade", true);
 
     if (error) throw error;
-    
-    // If no guides in database, insert the premade ones
-    if (!existingGuides || existingGuides.length === 0) {
-      const { error: insertError } = await supabase
-        .from('travel_guides')
+
+    if (!existing || existing.length === 0) {
+      /* insert premades only once */
+      const { error: insertErr } = await supabase
+        .from("travel_guides")
         .insert(premadeGuides);
-      
-      if (insertError) throw insertError;
-      
+      if (insertErr) throw insertErr;
       return premadeGuides;
     }
-    
-    return existingGuides;
-  } catch (error) {
-    console.error("Error fetching premade guides:", error);
+    return existing;
+  } catch (e) {
+    console.error("Error fetching premade guides:", e);
     return [];
   }
 }
 
+/* ----------  download guide (by id) ---------- */
 export async function downloadGuide(id: string): Promise<TravelGuide | null> {
   try {
-    // If UUID format, query from database
-    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-      const { data, error } = await supabase
-        .from('travel_guides')
-        .select('*')
-        .eq('id', id)
-        .single();
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+    if (uuidRegex.test(id)) {
+      /* fetch from DB */
+      const { data, error } = await supabase
+        .from("travel_guides")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (error) throw error;
       return data;
-    } else {
-      // For hardcoded IDs like "vegan-la-tour" or "hollywood-tour"
-      const guides = await fetchPremadeGuides();
-      const guide = guides.find(g => g.id === id);
-      return guide || null;
     }
-  } catch (error) {
-    console.error("Error downloading guide:", error);
+
+    /* fallback → search premade array */
+    const premades = await fetchPremadeGuides();
+    return premades.find(g => g.id === id) || null;
+  } catch (e) {
+    console.error("Error downloading guide:", e);
     return null;
   }
 }
