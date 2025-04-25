@@ -3,7 +3,7 @@ import { Box } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import VRScene, { DefaultVRScene } from "./VRScene";
+import VRScene from "./VRScene";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface VRExperienceCardProps {
@@ -36,7 +36,10 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
       <Dialog open={showVR} onOpenChange={setShowVR}>
         <DialogContent className="max-w-4xl h-[600px] p-0">
           <VRScene>
-            <DefaultVRScene panoramaUrl={`/placeholder.svg`} />
+            <mesh>
+              <sphereGeometry args={[5, 64, 64]} />
+              <meshStandardMaterial color="#336699" side={2} />
+            </mesh>
           </VRScene>
         </DialogContent>
       </Dialog>
