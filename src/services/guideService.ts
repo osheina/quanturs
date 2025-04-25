@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
@@ -151,8 +150,8 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
     let premadeGuides: TravelGuide[] = [
       {
         id: "vegan-la-tour",
-        title: "Vegan Tour in Los Angeles",
-        prompt: "3-day vegan culinary experience in LA",
+        title: "Веганский тур по Лос-Анжелесу",
+        prompt: "3-дневное кулинарное путешествие по лучшим веганским заведениям",
         content: JSON.stringify({
           days: [
             {
@@ -209,12 +208,12 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "3-day culinary journey through the best vegan spots"
+        description: "3-дневное кулинарное путешествие по лучшим веганским заведениям"
       },
       {
         id: "hollywood-tour",
-        title: "Hollywood & Beverly Hills",
-        prompt: "Eco-friendly tour of LA landmarks",
+        title: "Голливуд и Беверли-Хиллз",
+        prompt: "Эко-тур по знаковым достопримечательностям Лос-Анжелеса",
         content: JSON.stringify({
           days: [
             {
@@ -271,7 +270,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "Eco-friendly tour of LA's iconic landmarks"
+        description: "Эко-тур по знаковым достопримечательностям Лос-Анжелеса"
       }
     ];
 
