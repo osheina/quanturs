@@ -1,7 +1,7 @@
 
 import { Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -21,7 +21,7 @@ const AIGuideSection = () => {
   const [selectedPremadeGuide, setSelectedPremadeGuide] = useState<TravelGuide | null>(null);
   const [isLoadingPremadeGuide, setIsLoadingPremadeGuide] = useState(false);
 
-  const { data: premadeGuides = [] } = useQuery({
+  const { data: premadeGuides = [], isLoading: isLoadingGuides } = useQuery({
     queryKey: ['premadeGuides'],
     queryFn: fetchPremadeGuides
   });
@@ -212,26 +212,33 @@ const AIGuideSection = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Featured Guides Section */}
       <div className="mt-12">
         <h3 className="text-xl font-semibold mb-6">Featured Guides</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {premadeGuides.map((guide) => (
-            <Card key={guide.id} className="hover:shadow-lg transition-shadow">
-              <div className="p-6">
-                <h4 className="text-lg font-semibold">{guide.title}</h4>
-                <p className="text-gray-600 mb-4">{guide.description}</p>
-                <Button 
-                  variant="outline"
-                  onClick={() => handlePreviewGuide(guide.id || "")}
-                  className="w-full"
-                  disabled={isLoadingPremadeGuide}
-                >
-                  {isLoadingPremadeGuide ? "Loading..." : "Preview Guide"}
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+        {isLoadingGuides ? (
+          <div className="text-center py-8">Loading featured guides...</div>
+        ) : premadeGuides.length === 0 ? (
+          <div className="text-center py-8">No featured guides available at the moment.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {premadeGuides.map((guide) => (
+              <Card key={guide.id} className="hover:shadow-lg transition-shadow">
+                <div className="p-6">
+                  <h4 className="text-lg font-semibold">{guide.title}</h4>
+                  <p className="text-gray-600 mb-4">{guide.description}</p>
+                  <Button 
+                    variant="outline"
+                    onClick={() => handlePreviewGuide(guide.id || "")}
+                    className="w-full"
+                    disabled={isLoadingPremadeGuide}
+                  >
+                    {isLoadingPremadeGuide ? "Loading..." : "Preview Guide"}
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

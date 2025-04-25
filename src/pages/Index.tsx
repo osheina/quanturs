@@ -5,6 +5,7 @@ import MainContent from "@/components/MainContent";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import { vrExperiences } from "@/data/vrExperiences";
 import VRExperienceCard from "@/components/VRExperienceCard";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -17,7 +18,7 @@ const Index = () => {
       <div className="container mx-auto py-12 px-4">
         <h2 className="text-3xl font-bold text-center mb-8">Immersive VR Experiences</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {vrExperiences.map((experience, index) => (
+          {vrExperiences.slice(0, 3).map((experience, index) => (
             <VRExperienceCard
               key={index}
               image={experience.image}
@@ -25,6 +26,11 @@ const Index = () => {
               duration={experience.duration}
             />
           ))}
+        </div>
+        <div className="text-center mt-6">
+          <Link to="/vr-experiences" className="text-primary hover:text-primary/80">
+            View all VR experiences →
+          </Link>
         </div>
       </div>
       
