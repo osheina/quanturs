@@ -287,11 +287,6 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
     if (existingGuides && existingGuides.length > 0) {
       // Check if any guide needs to be updated to English
       const needsUpdate = existingGuides.some(guide => 
-        guide.title.includes("Веганский") || 
-        guide.title.includes("Голливуд") ||
-        guide.description.includes("кулинарное") ||
-        guide.description.includes("достопримечательностям") ||
-        // Additional check for any non-English characters
         /[^\x00-\x7F]/.test(guide.title) ||
         /[^\x00-\x7F]/.test(guide.description)
       );

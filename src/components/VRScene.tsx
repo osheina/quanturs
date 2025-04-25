@@ -26,8 +26,6 @@ const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Ex
 
 // This component handles the VR content to ensure proper context
 const VRContent: React.FC<{ children?: React.ReactNode; title: string }> = ({ children, title }) => {
-  const { player } = useXR();
-  
   return (
     <>
       <ambientLight intensity={0.5} />
