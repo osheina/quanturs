@@ -1,4 +1,3 @@
-
 import { Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -216,16 +215,29 @@ const AIGuideSection = () => {
       <div className="mt-12">
         <h3 className="text-xl font-semibold mb-6">Featured Guides</h3>
         {isLoadingGuides ? (
-          <div className="text-center py-8">Loading featured guides...</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="p-6">
+                <div className="space-y-4 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  <div className="h-8 bg-gray-200 rounded w-full"></div>
+                </div>
+              </Card>
+            ))}
+          </div>
         ) : premadeGuides.length === 0 ? (
-          <div className="text-center py-8">No featured guides available at the moment.</div>
+          <Card className="p-6 text-center">
+            <p className="text-gray-600">No featured guides available at the moment.</p>
+            <p className="text-sm text-gray-500 mt-2">Try creating a custom guide above!</p>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {premadeGuides.map((guide) => (
               <Card key={guide.id} className="hover:shadow-lg transition-shadow">
                 <div className="p-6">
                   <h4 className="text-lg font-semibold">{guide.title}</h4>
-                  <p className="text-gray-600 mb-4">{guide.description}</p>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{guide.description}</p>
                   <Button 
                     variant="outline"
                     onClick={() => handlePreviewGuide(guide.id || "")}
@@ -240,6 +252,7 @@ const AIGuideSection = () => {
           </div>
         )}
       </div>
+
     </div>
   );
 };

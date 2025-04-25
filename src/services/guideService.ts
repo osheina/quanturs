@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
@@ -148,201 +147,85 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
 
 export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
   try {
-    // Define premade guides in English
-    let premadeGuides: TravelGuide[] = [
+    // Define premade guides for Los Angeles
+    const premadeGuides: TravelGuide[] = [
       {
-        id: "vegan-la-tour",
-        title: "Vegan Tour in Los Angeles",
-        prompt: "3-day vegan culinary experience in LA",
+        id: "la-vegan-weekend",
+        title: "Vegan Weekend in Los Angeles",
+        prompt: "Weekend plan in Los Angeles with vegan restaurants",
         content: JSON.stringify({
           days: [
             {
-              title: "Day 1",
+              title: "Day 1 - Venice and Santa Monica",
               activities: [
                 {
                   time: "9:00 AM",
                   activity: "Breakfast at Cafe Gratitude",
-                  location: "Venice",
-                  notes: "Known for their plant-based cuisine and positive atmosphere"
+                  location: "Venice, Los Angeles",
+                  notes: "Start your day with organic, plant-based breakfast"
                 },
                 {
-                  time: "12:00 PM",
+                  time: "11:00 AM",
+                  activity: "Santa Monica Farmers Market",
+                  location: "Arizona Avenue, Santa Monica",
+                  notes: "Shop for fresh local produce and artisanal goods"
+                },
+                {
+                  time: "2:00 PM",
+                  activity: "Lunch at Plant Food + Wine",
+                  location: "Venice, Los Angeles",
+                  notes: "Upscale vegan dining with a beautiful garden"
+                }
+              ]
+            },
+            {
+              title: "Day 2 - Hollywood and Beverly Hills",
+              activities: [
+                {
+                  time: "10:00 AM",
+                  activity: "Hike at Runyon Canyon",
+                  location: "Hollywood",
+                  notes: "Morning hike with city views"
+                },
+                {
+                  time: "1:00 PM",
                   activity: "Lunch at Crossroads Kitchen",
-                  location: "Melrose",
-                  notes: "Upscale vegan dining with celebrity chef Tal Ronnen"
-                },
-                {
-                  time: "3:00 PM",
-                  activity: "Visit The Butcher's Daughter",
-                  location: "Abbot Kinney, Venice",
-                  notes: "Plant-based cafe and juice bar with gorgeous design"
-                }
-              ]
-            },
-            {
-              title: "Day 2",
-              activities: [
-                {
-                  time: "10:00 AM",
-                  activity: "Brunch at Plant Food + Wine",
-                  location: "Venice",
-                  notes: "Beautiful outdoor garden setting with gourmet vegan cuisine"
-                },
-                {
-                  time: "2:00 PM",
-                  activity: "Visit Erewhon Market",
-                  location: "Various Locations",
-                  notes: "High-end organic market with amazing vegan prepared foods"
-                }
-              ]
-            }
-          ],
-          recommendations: {
-            restaurants: ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"],
-            accommodations: ["1 Hotel West Hollywood", "Terranea Resort", "Shore Hotel Santa Monica"],
-            transportation: [
-              "Tesla Rental Services",
-              "Waymo Autonomous Taxis",
-              "Cruise Self-Driving Vehicles",
-              "Metro Rail System",
-              "Bird/Lime Electric Scooters"
-            ]
-          }
-        }),
-        is_premade: true,
-        description: "3-day culinary journey through the best vegan spots"
-      },
-      {
-        id: "hollywood-tour",
-        title: "Hollywood & Beverly Hills",
-        prompt: "Eco-friendly tour of LA landmarks",
-        content: JSON.stringify({
-          days: [
-            {
-              title: "Day 1",
-              activities: [
-                {
-                  time: "10:00 AM",
-                  activity: "Visit Hollywood Walk of Fame",
-                  location: "Hollywood Boulevard",
-                  notes: "Iconic sidewalk featuring entertainment stars"
-                },
-                {
-                  time: "1:00 PM",
-                  activity: "Tour of Grauman's Chinese Theatre",
-                  location: "Hollywood Boulevard",
-                  notes: "Historic cinema palace with celebrity handprints"
+                  location: "Melrose, Los Angeles",
+                  notes: "Celebrity chef Tal Ronnen's upscale vegan restaurant"
                 },
                 {
                   time: "4:00 PM",
-                  activity: "Visit Griffith Observatory",
-                  location: "Griffith Park",
-                  notes: "Panoramic views of Los Angeles and the Hollywood Sign"
-                }
-              ]
-            },
-            {
-              title: "Day 2",
-              activities: [
-                {
-                  time: "9:00 AM",
-                  activity: "Explore Rodeo Drive",
+                  activity: "Shopping at Erewhon Market",
                   location: "Beverly Hills",
-                  notes: "Luxury shopping and celebrity spotting"
-                },
-                {
-                  time: "2:00 PM",
-                  activity: "Visit The Grove",
-                  location: "Fairfax District",
-                  notes: "Upscale outdoor shopping center with eco-friendly options"
+                  notes: "Luxury health food market with prepared foods"
                 }
               ]
             }
           ],
           recommendations: {
-            restaurants: ["Gracias Madre", "Nic's on Beverly", "Crossroads Kitchen"],
-            accommodations: ["The London West Hollywood", "Waldorf Astoria Beverly Hills", "1 Hotel West Hollywood"],
+            restaurants: [
+              "Cafe Gratitude - Venice",
+              "Crossroads Kitchen - Melrose",
+              "Plant Food + Wine - Venice",
+              "Gracias Madre - West Hollywood"
+            ],
+            accommodations: [
+              "1 Hotel West Hollywood - Eco-luxury",
+              "Shore Hotel Santa Monica - Ocean view, LEED certified"
+            ],
             transportation: [
-              "Tesla Rental Services",
-              "Waymo Autonomous Taxis",
-              "Cruise Self-Driving Vehicles",
-              "Metro Rail System",
-              "Bird/Lime Electric Scooters"
+              "Metro Expo Line",
+              "Bird/Lime Electric Scooters",
+              "Walking in Venice/Santa Monica"
             ]
           }
         }),
         is_premade: true,
-        description: "Eco-friendly tour of LA's iconic landmarks"
-      },
-      {
-        id: "beverly-hills-luxury",
-        title: "Beverly Hills Luxury Experience",
-        prompt: "Luxury eco-friendly tour of Beverly Hills",
-        content: JSON.stringify({
-          days: [
-            {
-              title: "Day 1",
-              activities: [
-                {
-                  time: "9:00 AM",
-                  activity: "Breakfast at The Polo Lounge",
-                  location: "Beverly Hills Hotel",
-                  notes: "Iconic restaurant known for celebrity sightings and garden terrace"
-                },
-                {
-                  time: "11:30 AM",
-                  activity: "Shopping on Rodeo Drive",
-                  location: "Rodeo Drive, Beverly Hills",
-                  notes: "Luxury shopping at designer boutiques and flagship stores"
-                },
-                {
-                  time: "3:00 PM",
-                  activity: "Spa Treatment",
-                  location: "The Peninsula Beverly Hills",
-                  notes: "Eco-friendly treatments using organic products"
-                }
-              ]
-            },
-            {
-              title: "Day 2",
-              activities: [
-                {
-                  time: "10:00 AM",
-                  activity: "Visit Greystone Mansion & Gardens",
-                  location: "905 Loma Vista Dr, Beverly Hills",
-                  notes: "Historic estate with beautiful gardens and architecture"
-                },
-                {
-                  time: "1:00 PM",
-                  activity: "Lunch at Spago Beverly Hills",
-                  location: "176 N Canon Drive",
-                  notes: "Wolfgang Puck's flagship restaurant with seasonal California cuisine"
-                },
-                {
-                  time: "4:00 PM",
-                  activity: "Electric Car Tour",
-                  location: "Beverly Hills",
-                  notes: "Tour of celebrity homes and landmarks in a luxury electric vehicle"
-                }
-              ]
-            }
-          ],
-          recommendations: {
-            restaurants: ["Spago Beverly Hills", "Crustacean", "The Palm"],
-            accommodations: ["The Beverly Hills Hotel", "Waldorf Astoria Beverly Hills", "The Peninsula Beverly Hills"],
-            transportation: [
-              "Tesla Rental",
-              "Private Electric Car Service",
-              "Electric Bicycle Rentals"
-            ]
-          }
-        }),
-        is_premade: true,
-        description: "Experience the height of luxury with an eco-friendly twist in Beverly Hills"
+        description: "Perfect weekend exploring LA's best vegan spots and eco-friendly activities"
       }
     ];
 
-    // Get Supabase guides or use hardcoded
+    // First try to get guides from Supabase
     const { data: existingGuides, error } = await supabase
       .from('travel_guides')
       .select('*')
@@ -350,45 +233,18 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
 
     if (error) throw error;
     
-    // Check if guides exist in Supabase and if any are in a different language
-    if (existingGuides && existingGuides.length > 0) {
-      // Check if any guide needs to be updated to English
-      const needsUpdate = existingGuides.some(guide => 
-        /[^\x00-\x7F]/.test(guide.title) ||
-        /[^\x00-\x7F]/.test(guide.description)
-      );
+    // If no guides in database, insert the premade ones
+    if (!existingGuides || existingGuides.length === 0) {
+      const { error: insertError } = await supabase
+        .from('travel_guides')
+        .insert(premadeGuides);
       
-      if (needsUpdate) {
-        console.log("Updating guides to English version");
-        // Delete the non-English guides and insert English ones
-        const { error: deleteError } = await supabase
-          .from('travel_guides')
-          .delete()
-          .eq('is_premade', true);
-          
-        if (deleteError) throw deleteError;
-        
-        // Insert the English ones
-        const { error: insertError } = await supabase
-          .from('travel_guides')
-          .insert(premadeGuides);
-        
-        if (insertError) throw insertError;
-        
-        return premadeGuides;
-      }
+      if (insertError) throw insertError;
       
-      return existingGuides;
+      return premadeGuides;
     }
-
-    // If no premade guides exist in the database, insert them
-    const { error: insertError } = await supabase
-      .from('travel_guides')
-      .insert(premadeGuides);
     
-    if (insertError) throw insertError;
-    
-    return premadeGuides;
+    return existingGuides;
   } catch (error) {
     console.error("Error fetching premade guides:", error);
     return [];
