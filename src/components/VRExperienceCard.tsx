@@ -3,7 +3,7 @@ import { Box } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import VRScene from "./VRScene";
+import VRScene, { DefaultVRScene } from "./VRScene";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface VRExperienceCardProps {

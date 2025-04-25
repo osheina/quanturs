@@ -1,25 +1,25 @@
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { 
-  Environment, 
-  OrbitControls, 
   PerspectiveCamera, 
+  Environment, 
   Sky, 
+  OrbitControls, 
   useTexture 
 } from '@react-three/drei';
 import { Button } from '@/components/ui/button';
-import { VRButton, ARButton, XR } from '@react-three/xr';
+import { VRButton, ARButton, XR, XRStore, XRSessionMode } from '@react-three/xr';
 
 interface PanoramaProps {
   texture: string;
 }
 
-const Panorama = ({ texture }: PanoramaProps) => {
+const Panorama: React.FC<PanoramaProps> = ({ texture }) => {
   const map = useTexture(texture);
   
   return (
-    <mesh>
+    <mesh scale={[-1, 1, 1]}>
       <sphereGeometry args={[500, 60, 40]} />
       <meshBasicMaterial map={map} side={2} />
     </mesh>
@@ -27,23 +27,25 @@ const Panorama = ({ texture }: PanoramaProps) => {
 };
 
 interface VRSceneProps {
-  panoramaUrl: string;
+  children?: React.ReactNode;
   enableControls?: boolean;
   enableXR?: boolean;
 }
 
-export const DefaultVRScene = ({ 
+export const DefaultVRScene: React.FC<{ 
+  panoramaUrl: string;
+  enableControls?: boolean;
+  enableXR?: boolean;
+}> = ({ 
   panoramaUrl, 
   enableControls = true, 
   enableXR = false 
-}: VRSceneProps) => {
-  const [xrMode, setXRMode] = useState<'VR' | 'AR' | null>(null);
-  
+}) => {
   return (
-    <div className="w-full h-full relative">
+    <div className="relative w-full h-full">
       <Canvas className="w-full h-full">
         {enableXR ? (
-          <XR>
+          <XR mode="VR">
             <PerspectiveCamera makeDefault position={[0, 0, 0.1]} />
             <Panorama texture={panoramaUrl} />
             <Sky />
@@ -53,27 +55,35 @@ export const DefaultVRScene = ({
           <>
             <PerspectiveCamera makeDefault position={[0, 0, 0.1]} />
             <Panorama texture={panoramaUrl} />
-            {enableControls && <OrbitControls enableZoom={false} enablePan={false} />}
             <Sky />
             <Environment preset="sunset" />
+            {enableControls && <OrbitControls enableZoom={false} />}
           </>
         )}
       </Canvas>
       
       {enableXR && (
-        <div className="absolute bottom-4 left-4 flex flex-row gap-2">
-          <VRButton />
-          <ARButton />
+        <div className="absolute bottom-4 left-4 z-10 flex gap-2">
+          <VRButton mode="VR" />
+          <ARButton mode="AR" />
         </div>
       )}
     </div>
   );
 };
 
-export default function VRScene({ children }: { children: React.ReactElement }) {
+const VRScene: React.FC<VRSceneProps> = ({ children, enableControls = true, enableXR = false }) => {
   return (
-    <div className="w-full h-full">
-      {children || <DefaultVRScene panoramaUrl="/placeholder.svg" />}
+    <div className="relative w-full h-full bg-black">
+      {children || (
+        <DefaultVRScene 
+          panoramaUrl="/placeholder.svg"
+          enableControls={enableControls}
+          enableXR={enableXR}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default VRScene;
