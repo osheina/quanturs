@@ -147,6 +147,7 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
 
 export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
   try {
+    // Define premade guides in English
     let premadeGuides: TravelGuide[] = [
       {
         id: "vegan-la-tour",
@@ -282,18 +283,22 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
 
     if (error) throw error;
     
-    // If guides exist in Supabase, delete any that don't match our expected titles/descriptions
+    // Check if guides exist in Supabase and if any are in a different language
     if (existingGuides && existingGuides.length > 0) {
-      // Check if any guide title/description is in Russian and update them
+      // Check if any guide needs to be updated to English
       const needsUpdate = existingGuides.some(guide => 
         guide.title.includes("Веганский") || 
         guide.title.includes("Голливуд") ||
         guide.description.includes("кулинарное") ||
-        guide.description.includes("достопримечательностям")
+        guide.description.includes("достопримечательностям") ||
+        // Additional check for any non-English characters
+        /[^\x00-\x7F]/.test(guide.title) ||
+        /[^\x00-\x7F]/.test(guide.description)
       );
       
       if (needsUpdate) {
-        // Delete the old ones and insert new ones
+        console.log("Updating guides to English version");
+        // Delete the non-English guides and insert English ones
         const { error: deleteError } = await supabase
           .from('travel_guides')
           .delete()
