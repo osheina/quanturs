@@ -9,7 +9,7 @@ import {
   useTexture 
 } from '@react-three/drei';
 import { Button } from '@/components/ui/button';
-import { VRButton, ARButton, XR, Controllers, Hands } from '@react-three/xr';
+import { VRButton, ARButton, XR } from '@react-three/xr';
 
 interface PanoramaProps {
   texture: string;
@@ -32,7 +32,7 @@ interface VRSceneProps {
   enableXR?: boolean;
 }
 
-const DefaultVRScene = ({ 
+export const DefaultVRScene = ({ 
   panoramaUrl, 
   enableControls = true, 
   enableXR = false 
@@ -44,8 +44,6 @@ const DefaultVRScene = ({
       <Canvas className="w-full h-full">
         {enableXR ? (
           <XR>
-            <Controllers />
-            <Hands />
             <PerspectiveCamera makeDefault position={[0, 0, 0.1]} />
             <Panorama texture={panoramaUrl} />
             <Sky />

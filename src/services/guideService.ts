@@ -4,16 +4,16 @@ import { TravelGuide } from "@/models/TravelGuide";
 
 export async function generateAIGuide(prompt: string): Promise<TravelGuide | null> {
   try {
-    // В реальном приложении здесь был бы запрос к Edge Function, 
-    // которая использует API OpenAI или другой AI сервис
+    // In a real application, there would be a request to an Edge Function
+    // that uses the OpenAI API or another AI service
     
-    // Симуляция ответа AI для тестирования без API ключей
+    // Simulating an AI response for testing without API keys
     const guideTitle = `Guide for: ${prompt.slice(0, 30)}${prompt.length > 30 ? '...' : ''}`;
     
-    // Определяем, включает ли запрос Лос-Анджелес
+    // Determine if the request includes Los Angeles
     const isLosAngeles = prompt.toLowerCase().includes('los angeles') || prompt.toLowerCase().includes('la ');
     
-    // Создаем базовый контент путеводителя
+    // Create basic guide content
     let content = {
       days: [
         {
@@ -97,7 +97,7 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
     };
 
     if (isLosAngeles) {
-      // Добавляем специфичные места для Лос-Анджелеса
+      // Add specific places for Los Angeles
       content.days.push({
         title: "Day 3",
         activities: [
@@ -123,7 +123,7 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
       });
     }
 
-    // Создаем запись в базе данных
+    // Create entry in database
     const newGuide: TravelGuide = {
       title: guideTitle,
       prompt: prompt,

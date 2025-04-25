@@ -35,7 +35,9 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
 
       <Dialog open={showVR} onOpenChange={setShowVR}>
         <DialogContent className="max-w-4xl h-[600px] p-0">
-          <VRScene sceneName={title} />
+          <VRScene>
+            <DefaultVRScene panoramaUrl={`/placeholder.svg`} />
+          </VRScene>
         </DialogContent>
       </Dialog>
     </>
