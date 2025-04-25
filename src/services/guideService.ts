@@ -150,8 +150,8 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
     let premadeGuides: TravelGuide[] = [
       {
         id: "vegan-la-tour",
-        title: "Веганский тур по Лос-Анжелесу",
-        prompt: "3-дневное кулинарное путешествие по лучшим веганским заведениям",
+        title: "Vegan Tour in Los Angeles",
+        prompt: "3-day vegan culinary experience in LA",
         content: JSON.stringify({
           days: [
             {
@@ -208,12 +208,12 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "3-дневное кулинарное путешествие по лучшим веганским заведениям"
+        description: "3-day culinary journey through the best vegan spots"
       },
       {
         id: "hollywood-tour",
-        title: "Голливуд и Беверли-Хиллз",
-        prompt: "Эко-тур по знаковым достопримечательностям Лос-Анжелеса",
+        title: "Hollywood & Beverly Hills",
+        prompt: "Eco-friendly tour of LA landmarks",
         content: JSON.stringify({
           days: [
             {
@@ -270,7 +270,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "Эко-тур по знаковым достопримечательностям Лос-Анжелеса"
+        description: "Eco-friendly tour of LA's iconic landmarks"
       }
     ];
 
