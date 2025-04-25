@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import VRScene from "./VRScene";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Text } from "@react-three/drei";
 
 interface VRExperienceCardProps {
   image: string;
@@ -35,11 +36,20 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
 
       <Dialog open={showVR} onOpenChange={setShowVR}>
         <DialogContent className="max-w-4xl h-[600px] p-0">
-          <VRScene>
+          <VRScene title={title}>
             <mesh>
               <sphereGeometry args={[5, 64, 64]} />
               <meshStandardMaterial color="#336699" side={2} />
             </mesh>
+            <Text
+              position={[0, 0, -4]}
+              fontSize={0.5}
+              color="white"
+              anchorX="center"
+              anchorY="middle"
+            >
+              {title}
+            </Text>
           </VRScene>
         </DialogContent>
       </Dialog>
