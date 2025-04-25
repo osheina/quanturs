@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
@@ -147,13 +148,89 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
 
 export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
   try {
-    const { data, error } = await supabase
+    let premadeGuides: TravelGuide[] = [
+      {
+        id: "vegan-la-tour",
+        title: "Vegan Tour in Los Angeles",
+        prompt: "3-day vegan culinary experience in LA",
+        content: JSON.stringify({
+          days: [
+            {
+              title: "Day 1",
+              activities: [
+                {
+                  time: "9:00 AM",
+                  activity: "Breakfast at Cafe Gratitude",
+                  location: "Venice",
+                  notes: "Known for their plant-based cuisine and positive atmosphere"
+                }
+              ]
+            }
+          ],
+          recommendations: {
+            restaurants: ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"],
+            transportation: [
+              "Tesla Rental Services",
+              "Waymo Autonomous Taxis",
+              "Cruise Self-Driving Vehicles",
+              "Metro Rail System",
+              "Bird/Lime Electric Scooters"
+            ]
+          }
+        }),
+        is_premade: true,
+        description: "3-day culinary journey through the best vegan spots"
+      },
+      {
+        id: "hollywood-tour",
+        title: "Hollywood & Beverly Hills",
+        prompt: "Eco-friendly tour of LA landmarks",
+        content: JSON.stringify({
+          days: [
+            {
+              title: "Day 1",
+              activities: [
+                {
+                  time: "10:00 AM",
+                  activity: "Visit Hollywood Walk of Fame",
+                  location: "Hollywood Boulevard",
+                  notes: "Iconic sidewalk featuring entertainment stars"
+                }
+              ]
+            }
+          ],
+          recommendations: {
+            transportation: [
+              "Tesla Rental Services",
+              "Waymo Autonomous Taxis",
+              "Cruise Self-Driving Vehicles",
+              "Metro Rail System",
+              "Bird/Lime Electric Scooters"
+            ]
+          }
+        }),
+        is_premade: true,
+        description: "Eco-friendly tour of LA's iconic landmarks"
+      }
+    ];
+
+    const { data: existingGuides, error } = await supabase
       .from('travel_guides')
       .select('*')
       .eq('is_premade', true);
 
     if (error) throw error;
-    return data || [];
+    
+    // If no premade guides exist in the database, insert them
+    if (!existingGuides || existingGuides.length === 0) {
+      const { error: insertError } = await supabase
+        .from('travel_guides')
+        .insert(premadeGuides);
+      
+      if (insertError) throw insertError;
+    }
+
+    return premadeGuides;
   } catch (error) {
     console.error("Error fetching premade guides:", error);
     return [];
