@@ -147,7 +147,7 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
 
 export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
   try {
-    // Define premade guides for Los Angeles
+    // Define two premade guides for Los Angeles
     const premadeGuides: TravelGuide[] = [
       {
         id: "la-vegan-weekend",
@@ -222,6 +222,81 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
         }),
         is_premade: true,
         description: "Perfect weekend exploring LA's best vegan spots and eco-friendly activities"
+      },
+      {
+        id: "la-eco-adventure",
+        title: "Sustainable Los Angeles Adventure",
+        prompt: "Eco-friendly weekend in Los Angeles",
+        content: JSON.stringify({
+          days: [
+            {
+              title: "Day 1 - Sustainability Tour",
+              activities: [
+                {
+                  time: "9:00 AM",
+                  activity: "Breakfast at Little Pine Restaurant",
+                  location: "Silver Lake, Los Angeles",
+                  notes: "100% vegan restaurant owned by Moby, donates all profits to animal rights organizations"
+                },
+                {
+                  time: "11:00 AM",
+                  activity: "LA River Bike Path Exploration",
+                  location: "Elysian Park",
+                  notes: "Eco-friendly bike tour highlighting urban sustainability efforts"
+                },
+                {
+                  time: "2:00 PM",
+                  activity: "Visit Tongva Park",
+                  location: "Santa Monica",
+                  notes: "Sustainable urban park design showcasing environmental conservation"
+                }
+              ]
+            },
+            {
+              title: "Day 2 - Green Living Experience",
+              activities: [
+                {
+                  time: "10:00 AM",
+                  activity: "Community Farmers Market",
+                  location: "Hollywood Farmers' Market",
+                  notes: "Support local, organic farmers and sustainable agriculture"
+                },
+                {
+                  time: "1:00 PM",
+                  activity: "Zero Waste Shopping at Refill Madness",
+                  location: "Mar Vista",
+                  notes: "Shop for eco-friendly, package-free household and personal care items"
+                },
+                {
+                  time: "4:00 PM",
+                  activity: "Sunset at Ballona Wetlands",
+                  location: "Playa Del Rey",
+                  notes: "Learn about local ecosystem conservation and enjoy nature"
+                }
+              ]
+            }
+          ],
+          recommendations: {
+            restaurants: [
+              "Little Pine Restaurant - Silver Lake",
+              "Sage Plant Based Bistro - Echo Park",
+              "The Organic Vault - Venice",
+              "Ramen Hood - Arts District"
+            ],
+            accommodations: [
+              "1 Hotel West Hollywood - Sustainable luxury",
+              "The Kinney Venice Beach - Eco-friendly boutique hotel"
+            ],
+            transportation: [
+              "Metro Bike Share",
+              "Electric Scooter Rentals",
+              "Walking tours",
+              "Hybrid/Electric Vehicle Rentals"
+            ]
+          }
+        }),
+        is_premade: true,
+        description: "An immersive eco-friendly journey through Los Angeles' sustainable hotspots"
       }
     ];
 
