@@ -3,14 +3,21 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import { TravelGuide } from '@/models/TravelGuide';
+import { vrExperiences } from '@/data/vrExperiences';
 
 interface VRSceneProps {
   children?: React.ReactNode;
   title?: string;
   guides?: TravelGuide[];
+  experiences?: typeof vrExperiences;
 }
 
-const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Experience", guides = [] }) => {
+const VRScene: React.FC<VRSceneProps> = ({ 
+  children, 
+  title = "Virtual Reality Experience", 
+  guides = [],
+  experiences = vrExperiences 
+}) => {
   return (
     <>
       <div className="w-full h-full">
@@ -63,6 +70,42 @@ const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Ex
                   maxWidth={2}
                 >
                   {guide.title}
+                </Text>
+              </group>
+            );
+          })}
+          
+          {/* Display VR experiences */}
+          {experiences.map((experience, index) => {
+            const angle = (index / experiences.length) * Math.PI * 2;
+            const radius = 3;  // Larger radius than guides
+            const x = Math.cos(angle) * radius;
+            const z = Math.sin(angle) * radius;
+            
+            return (
+              <group key={index} position={[x, 0, z]}>
+                <mesh>
+                  <boxGeometry args={[1, 1, 1]} />
+                  <meshStandardMaterial color="orange" />
+                </mesh>
+                <Text
+                  position={[0, 1.2, 0]}
+                  fontSize={0.2}
+                  color="white"
+                  anchorX="center"
+                  anchorY="middle"
+                  maxWidth={2}
+                >
+                  {experience.title}
+                </Text>
+                <Text
+                  position={[0, 0.8, 0]}
+                  fontSize={0.1}
+                  color="lightblue"
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  {experience.duration}
                 </Text>
               </group>
             );

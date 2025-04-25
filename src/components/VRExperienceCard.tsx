@@ -6,6 +6,7 @@ import { useState } from "react";
 import VRScene from "./VRScene";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Text } from "@react-three/drei";
+import { vrExperiences } from "@/data/vrExperiences";
 
 interface VRExperienceCardProps {
   image: string;
@@ -36,7 +37,10 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
 
       <Dialog open={showVR} onOpenChange={setShowVR}>
         <DialogContent className="max-w-4xl h-[600px] p-0">
-          <VRScene title={title}>
+          <VRScene 
+            title={title}
+            experiences={vrExperiences}
+          >
             <mesh>
               <sphereGeometry args={[5, 64, 64]} />
               <meshStandardMaterial color="#336699" side={2} />
