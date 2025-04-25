@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { generateAIGuide, fetchPremadeGuides } from "@/services/guideService";
+import { generateAIGuide, fetchPremadeGuides, downloadGuide } from "@/services/guideService";
 import { TravelGuide } from "@/models/TravelGuide";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
@@ -18,6 +18,8 @@ const AIGuideSection = () => {
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGuide, setGeneratedGuide] = useState<TravelGuide | null>(null);
+  const [selectedPremadeGuide, setSelectedPremadeGuide] = useState<TravelGuide | null>(null);
+  const [isLoadingPremadeGuide, setIsLoadingPremadeGuide] = useState(false);
 
   const { data: premadeGuides = [] } = useQuery({
     queryKey: ['premadeGuides'],
@@ -83,6 +85,81 @@ const AIGuideSection = () => {
     setPrompt("");
   };
 
+  const handleClosePremadeGuide = () => {
+    setSelectedPremadeGuide(null);
+  };
+
+  const handlePreviewGuide = async (guideId: string) => {
+    try {
+      setIsLoadingPremadeGuide(true);
+      const guide = premadeGuides.find(g => g.id === guideId);
+      
+      if (guide) {
+        setSelectedPremadeGuide(guide);
+      } else {
+        const downloadedGuide = await downloadGuide(guideId);
+        if (downloadedGuide) {
+          setSelectedPremadeGuide(downloadedGuide);
+        } else {
+          throw new Error("Guide not found");
+        }
+      }
+    } catch (error) {
+      console.error("Error loading guide:", error);
+      toast({
+        title: "Error Loading Guide",
+        description: "Could not load the selected guide. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingPremadeGuide(false);
+    }
+  };
+
+  const renderGuideContent = (guide: TravelGuide) => {
+    const content = JSON.parse(guide.content);
+    return (
+      <div className="space-y-6 mt-4">
+        {content.days?.map((day: any, index: number) => (
+          <Card key={index} className="p-6">
+            <h3 className="text-xl font-semibold mb-4">{day.title}</h3>
+            <div className="space-y-4">
+              {day.activities?.map((activity: any, actIndex: number) => (
+                <div key={actIndex} className="border-l-4 border-primary/20 pl-4">
+                  <p className="font-semibold text-primary">{activity.time}</p>
+                  <p className="text-lg">{activity.activity}</p>
+                  <p className="text-sm text-gray-600">{activity.location}</p>
+                  {activity.notes && (
+                    <p className="text-sm text-gray-500 mt-1">{activity.notes}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))}
+        {content.recommendations && (
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
+              <div className="grid gap-6">
+                {Object.entries(content.recommendations).map(([key, values]: [string, any]) => (
+                  <div key={key}>
+                    <h4 className="text-lg font-medium capitalize mb-2">{key}</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {values.map((item: string, index: number) => (
+                        <li key={index} className="text-gray-600">{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
       <div className="flex items-center gap-3 mb-4">
@@ -115,92 +192,45 @@ const AIGuideSection = () => {
         </Button>
       </form>
 
-      <Dialog open={generatedGuide !== null} onOpenChange={() => handleCloseGeneratedGuide()}>
+      {/* Dialog for generated AI guide */}
+      <Dialog open={generatedGuide !== null} onOpenChange={handleCloseGeneratedGuide}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">{generatedGuide?.title}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 mt-4">
-            {generatedGuide && JSON.parse(generatedGuide.content).days.map((day: any, index: number) => (
-              <Card key={index} className="p-6">
-                <h3 className="text-xl font-semibold mb-4">Day {index + 1}: {day.title}</h3>
-                <div className="space-y-4">
-                  {day.activities.map((activity: any, actIndex: number) => (
-                    <div key={actIndex} className="border-l-4 border-primary/20 pl-4">
-                      <p className="font-semibold text-primary">{activity.time}</p>
-                      <p className="text-lg">{activity.activity}</p>
-                      <p className="text-sm text-gray-600">{activity.location}</p>
-                      {activity.notes && (
-                        <p className="text-sm text-gray-500 mt-1">{activity.notes}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ))}
-            {generatedGuide && (
-              <div className="space-y-6">
-                <Card className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
-                  <div className="grid gap-6">
-                    {Object.entries(JSON.parse(generatedGuide.content).recommendations).map(([key, values]: [string, any]) => (
-                      <div key={key}>
-                        <h4 className="text-lg font-medium capitalize mb-2">{key}</h4>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {values.map((item: string, index: number) => (
-                            <li key={index} className="text-gray-600">{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </div>
-            )}
-          </div>
+          {generatedGuide && renderGuideContent(generatedGuide)}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for premade guide preview */}
+      <Dialog open={selectedPremadeGuide !== null} onOpenChange={handleClosePremadeGuide}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{selectedPremadeGuide?.title}</DialogTitle>
+          </DialogHeader>
+          {selectedPremadeGuide && renderGuideContent(selectedPremadeGuide)}
         </DialogContent>
       </Dialog>
 
       <div className="mt-12">
         <h3 className="text-xl font-semibold mb-6">Featured Guides</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="hover:shadow-lg transition-shadow">
-            <div className="p-6">
-              <h4 className="text-lg font-semibold">Vegan Tour in Los Angeles</h4>
-              <p className="text-gray-600 mb-4">3-day culinary journey through the best vegan spots</p>
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  toast({
-                    title: "Loading Guide",
-                    description: "Guide preview coming soon!",
-                  });
-                }}
-                className="w-full"
-              >
-                Preview Guide
-              </Button>
-            </div>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow">
-            <div className="p-6">
-              <h4 className="text-lg font-semibold">Hollywood & Beverly Hills</h4>
-              <p className="text-gray-600 mb-4">Eco-friendly tour of LA's iconic landmarks</p>
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  toast({
-                    title: "Loading Guide",
-                    description: "Guide preview coming soon!",
-                  });
-                }}
-                className="w-full"
-              >
-                Preview Guide
-              </Button>
-            </div>
-          </Card>
+          {premadeGuides.slice(0, 2).map((guide) => (
+            <Card key={guide.id} className="hover:shadow-lg transition-shadow">
+              <div className="p-6">
+                <h4 className="text-lg font-semibold">{guide.title}</h4>
+                <p className="text-gray-600 mb-4">{guide.description}</p>
+                <Button 
+                  variant="outline"
+                  onClick={() => handlePreviewGuide(guide.id)}
+                  className="w-full"
+                  disabled={isLoadingPremadeGuide}
+                >
+                  {isLoadingPremadeGuide ? "Loading..." : "Preview Guide"}
+                </Button>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </div>

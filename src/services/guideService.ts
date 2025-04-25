@@ -163,12 +163,42 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
                   activity: "Breakfast at Cafe Gratitude",
                   location: "Venice",
                   notes: "Known for their plant-based cuisine and positive atmosphere"
+                },
+                {
+                  time: "12:00 PM",
+                  activity: "Lunch at Crossroads Kitchen",
+                  location: "Melrose",
+                  notes: "Upscale vegan dining with celebrity chef Tal Ronnen"
+                },
+                {
+                  time: "3:00 PM",
+                  activity: "Visit The Butcher's Daughter",
+                  location: "Abbot Kinney, Venice",
+                  notes: "Plant-based cafe and juice bar with gorgeous design"
+                }
+              ]
+            },
+            {
+              title: "Day 2",
+              activities: [
+                {
+                  time: "10:00 AM",
+                  activity: "Brunch at Plant Food + Wine",
+                  location: "Venice",
+                  notes: "Beautiful outdoor garden setting with gourmet vegan cuisine"
+                },
+                {
+                  time: "2:00 PM",
+                  activity: "Visit Erewhon Market",
+                  location: "Various Locations",
+                  notes: "High-end organic market with amazing vegan prepared foods"
                 }
               ]
             }
           ],
           recommendations: {
             restaurants: ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"],
+            accommodations: ["1 Hotel West Hollywood", "Terranea Resort", "Shore Hotel Santa Monica"],
             transportation: [
               "Tesla Rental Services",
               "Waymo Autonomous Taxis",
@@ -195,11 +225,42 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
                   activity: "Visit Hollywood Walk of Fame",
                   location: "Hollywood Boulevard",
                   notes: "Iconic sidewalk featuring entertainment stars"
+                },
+                {
+                  time: "1:00 PM",
+                  activity: "Tour of Grauman's Chinese Theatre",
+                  location: "Hollywood Boulevard",
+                  notes: "Historic cinema palace with celebrity handprints"
+                },
+                {
+                  time: "4:00 PM",
+                  activity: "Visit Griffith Observatory",
+                  location: "Griffith Park",
+                  notes: "Panoramic views of Los Angeles and the Hollywood Sign"
+                }
+              ]
+            },
+            {
+              title: "Day 2",
+              activities: [
+                {
+                  time: "9:00 AM",
+                  activity: "Explore Rodeo Drive",
+                  location: "Beverly Hills",
+                  notes: "Luxury shopping and celebrity spotting"
+                },
+                {
+                  time: "2:00 PM",
+                  activity: "Visit The Grove",
+                  location: "Fairfax District",
+                  notes: "Upscale outdoor shopping center with eco-friendly options"
                 }
               ]
             }
           ],
           recommendations: {
+            restaurants: ["Gracias Madre", "Nic's on Beverly", "Crossroads Kitchen"],
+            accommodations: ["The London West Hollywood", "Waldorf Astoria Beverly Hills", "1 Hotel West Hollywood"],
             transportation: [
               "Tesla Rental Services",
               "Waymo Autonomous Taxis",
@@ -230,7 +291,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
       if (insertError) throw insertError;
     }
 
-    return premadeGuides;
+    return existingGuides && existingGuides.length > 0 ? existingGuides : premadeGuides;
   } catch (error) {
     console.error("Error fetching premade guides:", error);
     return [];
@@ -239,14 +300,22 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
 
 export async function downloadGuide(id: string): Promise<TravelGuide | null> {
   try {
-    const { data, error } = await supabase
-      .from('travel_guides')
-      .select('*')
-      .eq('id', id)
-      .single();
+    // If UUID format, query from database
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      const { data, error } = await supabase
+        .from('travel_guides')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } else {
+      // For hardcoded IDs like "vegan-la-tour" or "hollywood-tour"
+      const guides = await fetchPremadeGuides();
+      const guide = guides.find(g => g.id === id);
+      return guide || null;
+    }
   } catch (error) {
     console.error("Error downloading guide:", error);
     return null;
