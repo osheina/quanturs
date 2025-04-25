@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { VRButton, XR } from '@react-three/xr';
+import { VRButton, XR, useXR } from '@react-three/xr';
 import { OrbitControls, Text } from '@react-three/drei';
 import { TravelGuide } from '@/models/TravelGuide';
 
@@ -16,11 +16,10 @@ const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Ex
     <>
       <VRButton />
       <Canvas>
-        <XR>
-          <VRContent title={title} guides={guides}>
-            {children}
-          </VRContent>
-        </XR>
+        {/* Remove the XR wrapper and use the VRContent directly */}
+        <VRContent title={title} guides={guides}>
+          {children}
+        </VRContent>
       </Canvas>
     </>
   );
