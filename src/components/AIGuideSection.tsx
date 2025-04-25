@@ -214,15 +214,15 @@ const AIGuideSection = () => {
 
       <div className="mt-12">
         <h3 className="text-xl font-semibold mb-6">Featured Guides</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {premadeGuides.slice(0, 2).map((guide) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {premadeGuides.map((guide) => (
             <Card key={guide.id} className="hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <h4 className="text-lg font-semibold">{guide.title}</h4>
                 <p className="text-gray-600 mb-4">{guide.description}</p>
                 <Button 
                   variant="outline"
-                  onClick={() => handlePreviewGuide(guide.id)}
+                  onClick={() => handlePreviewGuide(guide.id || "")}
                   className="w-full"
                   disabled={isLoadingPremadeGuide}
                 >

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { VRButton, XR, XRStore } from '@react-three/xr';
+import { VRButton, XR } from '@react-three/xr';
 import { OrbitControls, Text } from '@react-three/drei';
 import { TravelGuide } from '@/models/TravelGuide';
 
@@ -11,14 +11,12 @@ interface VRSceneProps {
   guides?: TravelGuide[];
 }
 
-const store = new XRStore();
-
 const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Experience", guides = [] }) => {
   return (
     <>
       <VRButton />
       <Canvas>
-        <XR store={store}>
+        <XR>
           <VRContent title={title} guides={guides}>
             {children}
           </VRContent>
@@ -66,7 +64,7 @@ const VRContent: React.FC<{ children?: React.ReactNode; title: string; guides: T
         const z = Math.sin(angle) * radius;
         
         return (
-          <group key={guide.id} position={[x, 0, z]}>
+          <group key={guide.id || index} position={[x, 0, z]}>
             <mesh>
               <boxGeometry args={[0.8, 0.8, 0.8]} />
               <meshStandardMaterial color="skyblue" />

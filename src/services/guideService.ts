@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
 
@@ -272,6 +273,72 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
         }),
         is_premade: true,
         description: "Eco-friendly tour of LA's iconic landmarks"
+      },
+      {
+        id: "beverly-hills-luxury",
+        title: "Beverly Hills Luxury Experience",
+        prompt: "Luxury eco-friendly tour of Beverly Hills",
+        content: JSON.stringify({
+          days: [
+            {
+              title: "Day 1",
+              activities: [
+                {
+                  time: "9:00 AM",
+                  activity: "Breakfast at The Polo Lounge",
+                  location: "Beverly Hills Hotel",
+                  notes: "Iconic restaurant known for celebrity sightings and garden terrace"
+                },
+                {
+                  time: "11:30 AM",
+                  activity: "Shopping on Rodeo Drive",
+                  location: "Rodeo Drive, Beverly Hills",
+                  notes: "Luxury shopping at designer boutiques and flagship stores"
+                },
+                {
+                  time: "3:00 PM",
+                  activity: "Spa Treatment",
+                  location: "The Peninsula Beverly Hills",
+                  notes: "Eco-friendly treatments using organic products"
+                }
+              ]
+            },
+            {
+              title: "Day 2",
+              activities: [
+                {
+                  time: "10:00 AM",
+                  activity: "Visit Greystone Mansion & Gardens",
+                  location: "905 Loma Vista Dr, Beverly Hills",
+                  notes: "Historic estate with beautiful gardens and architecture"
+                },
+                {
+                  time: "1:00 PM",
+                  activity: "Lunch at Spago Beverly Hills",
+                  location: "176 N Canon Drive",
+                  notes: "Wolfgang Puck's flagship restaurant with seasonal California cuisine"
+                },
+                {
+                  time: "4:00 PM",
+                  activity: "Electric Car Tour",
+                  location: "Beverly Hills",
+                  notes: "Tour of celebrity homes and landmarks in a luxury electric vehicle"
+                }
+              ]
+            }
+          ],
+          recommendations: {
+            restaurants: ["Spago Beverly Hills", "Crustacean", "The Palm"],
+            accommodations: ["The Beverly Hills Hotel", "Waldorf Astoria Beverly Hills", "The Peninsula Beverly Hills"],
+            transportation: [
+              "Tesla Rental",
+              "Private Electric Car Service",
+              "Electric Bicycle Rentals"
+            ]
+          }
+        }),
+        is_premade: true,
+        description: "Experience the height of luxury with an eco-friendly twist in Beverly Hills"
       }
     ];
 
