@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { VRButton, XR } from '@react-three/xr';
+import { VRButton, XR, XRStore } from '@react-three/xr';
 import { OrbitControls, Text } from '@react-three/drei';
 import { TravelGuide } from '@/models/TravelGuide';
 
@@ -11,12 +11,14 @@ interface VRSceneProps {
   guides?: TravelGuide[];
 }
 
+const store = new XRStore();
+
 const VRScene: React.FC<VRSceneProps> = ({ children, title = "Virtual Reality Experience", guides = [] }) => {
   return (
     <>
       <VRButton />
       <Canvas>
-        <XR>
+        <XR store={store}>
           <VRContent title={title} guides={guides}>
             {children}
           </VRContent>
@@ -105,4 +107,3 @@ const VRContent: React.FC<{ children?: React.ReactNode; title: string; guides: T
 };
 
 export default VRScene;
-
