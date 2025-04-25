@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { XR, VRButton, ARButton } from '@react-three/xr';
+import { XR, VRButton, Controllers } from '@react-three/xr';
 import { OrbitControls } from '@react-three/drei';
 
 interface VRSceneProps {
@@ -13,9 +13,10 @@ const VRScene: React.FC<VRSceneProps> = ({ children }) => {
     <>
       <VRButton />
       <Canvas>
+        <ambientLight intensity={0.5} />
         <XR>
+          <Controllers />
           <OrbitControls />
-          <ambientLight intensity={0.5} />
           {children || (
             <mesh>
               <boxGeometry args={[1, 1, 1]} />

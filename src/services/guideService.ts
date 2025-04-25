@@ -274,6 +274,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
       }
     ];
 
+    // Get Supabase guides or use hardcoded
     const { data: existingGuides, error } = await supabase
       .from('travel_guides')
       .select('*')
@@ -281,16 +282,46 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
 
     if (error) throw error;
     
-    // If no premade guides exist in the database, insert them
-    if (!existingGuides || existingGuides.length === 0) {
-      const { error: insertError } = await supabase
-        .from('travel_guides')
-        .insert(premadeGuides);
+    // If guides exist in Supabase, delete any that don't match our expected titles/descriptions
+    if (existingGuides && existingGuides.length > 0) {
+      // Check if any guide title/description is in Russian and update them
+      const needsUpdate = existingGuides.some(guide => 
+        guide.title.includes("Веганский") || 
+        guide.title.includes("Голливуд") ||
+        guide.description.includes("кулинарное") ||
+        guide.description.includes("достопримечательностям")
+      );
       
-      if (insertError) throw insertError;
+      if (needsUpdate) {
+        // Delete the old ones and insert new ones
+        const { error: deleteError } = await supabase
+          .from('travel_guides')
+          .delete()
+          .eq('is_premade', true);
+          
+        if (deleteError) throw deleteError;
+        
+        // Insert the English ones
+        const { error: insertError } = await supabase
+          .from('travel_guides')
+          .insert(premadeGuides);
+        
+        if (insertError) throw insertError;
+        
+        return premadeGuides;
+      }
+      
+      return existingGuides;
     }
 
-    return existingGuides && existingGuides.length > 0 ? existingGuides : premadeGuides;
+    // If no premade guides exist in the database, insert them
+    const { error: insertError } = await supabase
+      .from('travel_guides')
+      .insert(premadeGuides);
+    
+    if (insertError) throw insertError;
+    
+    return premadeGuides;
   } catch (error) {
     console.error("Error fetching premade guides:", error);
     return [];
