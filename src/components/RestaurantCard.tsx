@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, BadgeDollarSign } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface RestaurantCardProps {
   image: string;
@@ -22,7 +23,13 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description 
         />
       </div>
       <CardHeader>
-        <CardTitle className="text-xl">{name}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl">{name}</CardTitle>
+          <Badge variant="outline" className="flex items-center gap-1">
+            <BadgeDollarSign className="w-4 h-4" />
+            {priceRange}
+          </Badge>
+        </div>
         <CardDescription className="flex items-center justify-between">
           <span>{cuisine}</span>
           <span className="flex items-center gap-1">
@@ -32,11 +39,11 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description 
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 mb-2">{description}</p>
-        <p className="text-sm font-semibold text-primary">{priceRange}</p>
+        <p className="text-sm text-gray-600">{description}</p>
       </CardContent>
     </Card>
   );
 };
 
 export default RestaurantCard;
+

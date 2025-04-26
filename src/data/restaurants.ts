@@ -17,6 +17,14 @@ export const restaurants = [
     description: "Classic French dishes with a modern twist in an art deco atmosphere",
   },
   {
+    image: "https://images.unsplash.com/photo-1473177104440-ffee2f376098",
+    name: "Gucci Osteria",
+    cuisine: "Italian Luxury",
+    rating: 5.0,
+    priceRange: "$$$$$",
+    description: "Exquisite Italian cuisine in an opulent setting with Gucci's signature elegance",
+  },
+  {
     image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
     name: "Sky Lounge",
     cuisine: "International Fusion",
@@ -33,3 +41,4 @@ export const restaurants = [
     description: "Farm-to-table Mediterranean dishes in a cozy atmosphere",
   }
 ];
+
