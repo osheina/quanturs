@@ -15,7 +15,7 @@ export const hotels = [
     price: 449,
   },
   {
-    image: "https://images.unsplash.com/photo-1549294413-26f195471cdb",
+    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05", // mountain summit image
     name: "Post Ranch Inn",
     location: "Big Sur, CA",
     ecoScore: 4.9,
