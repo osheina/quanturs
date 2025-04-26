@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, BadgeDollarSign } from "lucide-react";
+import { Star, BadgeDollarSign, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface RestaurantCardProps {
@@ -10,9 +10,10 @@ interface RestaurantCardProps {
   rating: number;
   priceRange: string;
   description: string;
+  location: string;
 }
 
-const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description }: RestaurantCardProps) => {
+const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description, location }: RestaurantCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative overflow-hidden">
@@ -37,6 +38,10 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description 
             {rating}
           </span>
         </CardDescription>
+        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+          <MapPin className="w-4 h-4" />
+          {location}
+        </div>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600">{description}</p>
