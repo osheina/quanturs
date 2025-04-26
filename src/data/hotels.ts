@@ -15,7 +15,7 @@ export const hotels = [
     price: 449,
   },
   {
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05", // mountain summit image
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d",
     name: "Post Ranch Inn",
     location: "Big Sur, CA",
     ecoScore: 4.9,
@@ -29,7 +29,7 @@ export const hotels = [
     price: 599,
   },
   {
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d",
+    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b",
     name: "Shore Hotel Santa Monica",
     location: "Santa Monica, CA",
     ecoScore: 4.6,
