@@ -48,6 +48,7 @@ export type Database = {
           image_url: string | null
           is_premade: boolean | null
           prompt: string
+          slug: string | null
           title: string
         }
         Insert: {
@@ -58,6 +59,7 @@ export type Database = {
           image_url?: string | null
           is_premade?: boolean | null
           prompt: string
+          slug?: string | null
           title: string
         }
         Update: {
@@ -68,6 +70,7 @@ export type Database = {
           image_url?: string | null
           is_premade?: boolean | null
           prompt?: string
+          slug?: string | null
           title?: string
         }
         Relationships: []

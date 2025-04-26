@@ -186,7 +186,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
                   time: "1:00 PM",
                   activity: "Lunch at Crossroads Kitchen",
                   location: "Melrose",
-                  notes: "Chef Tal Ronnen’s iconic vegan restaurant"
+                  notes: "Chef Tal Ronnen's iconic vegan restaurant"
                 },
                 {
                   time: "4:00 PM",
@@ -212,7 +212,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "Two-day plant-based itinerary featuring LA’s top vegan spots"
+        description: "Two-day plant-based itinerary featuring LA's top vegan spots"
       },
       {
         id: "la-eco-adventure",
@@ -227,19 +227,25 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
                   time: "9:00 AM",
                   activity: "Breakfast at Little Pine",
                   location: "Silver Lake",
-                  notes: "100 % vegan; profits to animal rights"
+                  notes: "100% vegan; profits to animal rights"
                 },
                 {
                   time: "11:00 AM",
-                  activity: "Bike the LA River Path",
-                  location: "Elysian Park",
-                  notes: "Urban ride showcasing revitalization efforts"
+                  activity: "Visit Wasteland",
+                  location: "Melrose Ave",
+                  notes: "High-end vintage and second-hand fashion"
                 },
                 {
                   time: "2:00 PM",
-                  activity: "Explore Tongva Park",
-                  location: "Santa Monica",
-                  notes: "Sustainable landscape architecture"
+                  activity: "Explore Buffalo Exchange",
+                  location: "La Brea",
+                  notes: "Popular second-hand clothing store with great finds"
+                },
+                {
+                  time: "4:00 PM",
+                  activity: "Shop at Squaresville Vintage",
+                  location: "Los Feliz",
+                  notes: "Local favorite for vintage clothing and accessories"
                 }
               ]
             },
@@ -254,12 +260,18 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
                 },
                 {
                   time: "1:00 PM",
-                  activity: "Zero-Waste Shopping at Refill Madness",
-                  location: "Mar Vista",
-                  notes: "Package-free household goods"
+                  activity: "Explore Crossroads Trading",
+                  location: "Santa Monica",
+                  notes: "Curated second-hand fashion store"
                 },
                 {
-                  time: "4:00 PM",
+                  time: "3:00 PM",
+                  activity: "Visit The RealReal",
+                  location: "West Hollywood",
+                  notes: "Luxury consignment shopping"
+                },
+                {
+                  time: "5:00 PM",
                   activity: "Sunset at Ballona Wetlands",
                   location: "Playa Del Rey",
                   notes: "Learn about coastal ecosystem conservation"
@@ -273,6 +285,14 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
               "Sage Plant-Based Bistro – Echo Park",
               "Ramen Hood – Arts District"
             ],
+            secondHandStores: [
+              "Wasteland – Melrose",
+              "Buffalo Exchange – La Brea",
+              "Crossroads Trading – Santa Monica",
+              "Squaresville Vintage – Los Feliz",
+              "The RealReal – West Hollywood",
+              "American Vintage – Silver Lake"
+            ],
             accommodations: [
               "1 Hotel West Hollywood – Sustainable luxury",
               "The Kinney Venice Beach – Eco-friendly boutique"
@@ -285,7 +305,7 @@ export async function fetchPremadeGuides(): Promise<TravelGuide[]> {
           }
         }),
         is_premade: true,
-        description: "Eco-conscious highlights: zero-waste shops, farmers markets & wetlands"
+        description: "Eco-conscious highlights: second-hand fashion, zero-waste shops & wetlands"
       }
     ];
 
