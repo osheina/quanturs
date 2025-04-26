@@ -1,24 +1,38 @@
 
 export const hotels = [
   {
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b",
-    name: "Eco Mountain Resort",
-    location: "Swiss Alps",
+    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd",
+    name: "1 Hotel West Hollywood",
+    location: "Los Angeles, CA",
     ecoScore: 4.8,
-    price: 299,
+    price: 599,
   },
   {
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    name: "Lakeside Eco Lodge",
-    location: "Canadian Rockies",
-    ecoScore: 4.9,
-    price: 399,
-  },
-  {
-    image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716",
-    name: "Forest Haven",
-    location: "Black Forest, Germany",
+    image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9",
+    name: "Terranea Resort",
+    location: "Rancho Palos Verdes, CA",
     ecoScore: 4.7,
-    price: 259,
+    price: 449,
   },
+  {
+    image: "https://images.unsplash.com/photo-1549294413-26f195471cdb",
+    name: "Post Ranch Inn",
+    location: "Big Sur, CA",
+    ecoScore: 4.9,
+    price: 1299,
+  },
+  {
+    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb",
+    name: "Cavallo Point Lodge",
+    location: "Sausalito, CA",
+    ecoScore: 4.7,
+    price: 599,
+  },
+  {
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d",
+    name: "Shore Hotel Santa Monica",
+    location: "Santa Monica, CA",
+    ecoScore: 4.6,
+    price: 399,
+  }
 ];
