@@ -1,3 +1,4 @@
+
 export const restaurants = [
   {
     image: "https://images.unsplash.com/photo-1554679665-f5537f187268",
@@ -45,7 +46,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "/lovable-uploads/ba2fb057-30b0-4906-924a-a3ae9feaf722.png",
+    image: "/lovable-uploads/3bcb1a6c-eea4-45e8-90ae-ad473e13bf0d.png",
     name: "Erewhon Market",
     cuisine: "Organic & Health Food",
     rating: 4.7,
