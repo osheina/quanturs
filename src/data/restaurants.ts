@@ -1,7 +1,7 @@
 
 export const restaurants = [
   {
-    image: "https://images.unsplash.com/photo-1552566626-52f8b828add9",
+    image: "https://images.unsplash.com/photo-1617352088541-d86516c07236",
     name: "Verde - Plant-Based Kitchen",
     cuisine: "Vegan Fine Dining",
     rating: 4.8,
@@ -10,7 +10,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
     name: "Keto Kitchen",
     cuisine: "Keto & Low-Carb",
     rating: 4.7,
@@ -19,7 +19,7 @@ export const restaurants = [
     location: "Santa Monica, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1473177104440-ffee2f376098",
+    image: "https://images.unsplash.com/photo-1579027989536-b7b1f875659b",
     name: "Catch LA",
     cuisine: "Seafood & Sushi",
     rating: 4.9,
@@ -28,7 +28,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+    image: "https://images.unsplash.com/photo-1532509774891-141d37f25ae9",
     name: "Organic Earth Cafe",
     cuisine: "Organic & Vegan",
     rating: 4.6,
@@ -37,7 +37,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
+    image: "https://images.unsplash.com/photo-1583792870658-047e11155fdd",
     name: "Nobu Malibu",
     cuisine: "Japanese Fusion",
     rating: 4.8,
@@ -46,7 +46,7 @@ export const restaurants = [
     location: "Malibu, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b",
+    image: "https://images.unsplash.com/photo-1607013407627-6ee814329547",
     name: "Green Garden",
     cuisine: "Raw Vegan",
     rating: 4.8,
@@ -55,7 +55,7 @@ export const restaurants = [
     location: "Santa Monica, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1579027989536-b7b1f875659b",
+    image: "https://images.unsplash.com/photo-1615937722923-67f6deaf2cc9",
     name: "Keto Comfort",
     cuisine: "Keto American",
     rating: 4.5,
@@ -64,7 +64,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b",
+    image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092",
     name: "Republique",
     cuisine: "French American",
     rating: 4.7,
@@ -73,7 +73,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+    image: "https://images.unsplash.com/photo-1539136788836-5699e78bfc75",
     name: "Crossroads Kitchen",
     cuisine: "Vegan Mediterranean",
     rating: 4.6,
@@ -82,3 +82,4 @@ export const restaurants = [
     location: "West Hollywood, CA"
   }
 ];
+
