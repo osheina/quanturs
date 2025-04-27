@@ -57,7 +57,7 @@ const SearchBar = () => {
                 {results.map((place) => (
                   <RestaurantCard
                     key={place.id}
-                    image={place.image || "https://images.unsplash.com/photo-1554679665-f5537f187268"}
+                    image="https://images.unsplash.com/photo-1554679665-f5537f187268"
                     name={place.name || ""}
                     cuisine={place.type}
                     rating={4.5}
