@@ -1,3 +1,4 @@
+
 export const restaurants = [
   {
     image: "https://images.unsplash.com/photo-1554679665-f5537f187268",
