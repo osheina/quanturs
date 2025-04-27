@@ -23,18 +23,21 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
         }).join(',');
         
         query = query.or(orConditions);
+        console.log("Search query with tokens:", orConditions);
       } else if (typeof searchTerms === 'string') {
         // Legacy support for single string search
         query = query.or(`name.ilike.%${searchTerms}%,type.ilike.%${searchTerms}%,diet_tags.ilike.%${searchTerms}%`);
+        console.log("Search query with string:", searchTerms);
       }
       
       const { data, error } = await query;
-
+      
       if (error) {
         console.error("Supabase search error:", error);
         throw error;
       }
       
+      console.log("Search results:", data?.length || 0, "items found");
       return data || [];
     },
     enabled: !!searchTerms && (typeof searchTerms === 'string' ? searchTerms.length > 0 : searchTerms.length > 0),
