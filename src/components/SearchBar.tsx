@@ -2,17 +2,34 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { results, isLoading, error } = useSearchPlaces(searchTerm);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const { results, isLoading, error } = useSearchPlaces(debouncedSearchTerm);
+
+  // Debounce search term to prevent too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
 
   const handleClear = () => {
     setSearchTerm("");
+    setDebouncedSearchTerm("");
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
@@ -22,9 +39,10 @@ const SearchBar = () => {
           <Input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearch}
             placeholder="Search vegan brunch, hikes, eco hotels..."
             className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
+            autoComplete="off"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 w-5 h-5" />
         </div>
@@ -33,12 +51,13 @@ const SearchBar = () => {
           size="icon"
           onClick={handleClear}
           className="rounded-full"
+          type="button"
         >
           <X className="w-5 h-5" />
         </Button>
       </div>
 
-      {searchTerm && (
+      {debouncedSearchTerm && (
         <div className="mt-8">
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
