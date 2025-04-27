@@ -16,7 +16,7 @@ const SearchBar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 300);
+    }, 500); // Increased debounce time slightly
 
     return () => {
       clearTimeout(timer);
@@ -28,8 +28,10 @@ const SearchBar = () => {
     setDebouncedSearchTerm("");
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  const handleSearch = (e: React.FormEvent<HTMLInputElement>) => {
+    // Using FormEvent instead of ChangeEvent for better input handling
+    const target = e.target as HTMLInputElement;
+    setSearchTerm(target.value);
   };
 
   return (
@@ -37,12 +39,14 @@ const SearchBar = () => {
       <div className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
-            type="text"
+            type="search"
             value={searchTerm}
             onChange={handleSearch}
             placeholder="Search vegan brunch, hikes, eco hotels..."
             className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
             autoComplete="off"
+            spellCheck="false"
+            lang="en"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 w-5 h-5" />
         </div>
@@ -52,6 +56,7 @@ const SearchBar = () => {
           onClick={handleClear}
           className="rounded-full"
           type="button"
+          aria-label="Clear search"
         >
           <X className="w-5 h-5" />
         </Button>
