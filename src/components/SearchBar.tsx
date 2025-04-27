@@ -2,7 +2,7 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
@@ -24,8 +24,17 @@ const SearchBar = () => {
     searchTokens.length > 0 ? searchTokens : []
   );
 
+  // Debug logs to see what's happening
+  useEffect(() => {
+    console.log('Search tokens:', searchTokens);
+    console.log('Search results:', results);
+    console.log('Is loading:', isLoading);
+    console.log('Error:', error);
+  }, [searchTokens, results, isLoading, error]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Form submitted with term:", searchTerm);
     setDebouncedSearchTerm(searchTerm);
     
     // Remove focus from input
@@ -34,6 +43,7 @@ const SearchBar = () => {
     // Scroll to results after a small delay to ensure they're rendered
     setTimeout(() => {
       if (resultsRef.current) {
+        console.log("Scrolling to results");
         resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);

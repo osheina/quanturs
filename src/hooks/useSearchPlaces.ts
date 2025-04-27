@@ -26,7 +26,7 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
         console.log("Search query with tokens:", orConditions);
       } else if (typeof searchTerms === 'string') {
         // Legacy support for single string search
-        query = query.or(`name.ilike.%${searchTerms}%,type.ilike.%${searchTerms}%,diet_tags.ilike.%${searchTerms}%`);
+        query = query.or(`name.ilike.%${searchTerms}%,type.ilike.%${searchTerms}%,location.ilike.%${searchTerms}%,diet_tags.ilike.%${searchTerms}%`);
         console.log("Search query with string:", searchTerms);
       }
       
