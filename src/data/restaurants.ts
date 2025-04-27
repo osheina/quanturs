@@ -45,15 +45,6 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-  image: "https://unsplash.com/photos/photo-of-yellow-chili-pepper-5i5zmvhVMZ4",
-  name: "Erewhon Market",
-  cuisine: "Organic & Health Food",
-  rating: 4.7,
-  priceRange: "$$$",
-  description: "Upscale organic market with tonic bar and prepared foods",
-  location: "Los Angeles, CA"
-  },
-  {
     image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
     name: "True Food Kitchen",
     cuisine: "Health-Conscious American",
