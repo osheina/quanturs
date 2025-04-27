@@ -2,7 +2,7 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
@@ -10,11 +10,29 @@ import RestaurantCard from "@/components/RestaurantCard";
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const { results, isLoading, error } = useSearchPlaces(debouncedSearchTerm);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  
+  // Tokenize the search term
+  const searchTokens = debouncedSearchTerm
+    .trim()
+    .split(/\s+/)
+    .filter(token => token.length >= 2) // Only use tokens with 2+ characters
+    .slice(0, 5); // Limit to 5 keywords for performance
+  
+  const { results, isLoading, error } = useSearchPlaces(
+    searchTokens.length > 0 ? searchTokens : []
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setDebouncedSearchTerm(searchTerm);
+    
+    // Scroll to results after a small delay to ensure they're rendered
+    setTimeout(() => {
+      if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleClear = () => {
@@ -26,6 +44,9 @@ const SearchBar = () => {
     setSearchTerm(e.target.value);
   };
 
+  const showNoResults = debouncedSearchTerm && !isLoading && (!results || results.length === 0);
+  const showTooManyKeywords = searchTokens.length >= 3 && showNoResults;
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <form onSubmit={handleSubmit} className="relative flex gap-2">
@@ -34,8 +55,8 @@ const SearchBar = () => {
             type="search"
             value={searchTerm}
             onChange={handleSearch}
-            placeholder="Search vegan brunch, hikes, eco hotels..."
-            className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
+            placeholder='Search "vegan brunch LA" or "eco hotel Malibu"...'
+            className="pl-10 pr-4 py-6 text-lg text-foreground rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
             autoComplete="off"
             spellCheck="false"
             lang="en"
@@ -62,7 +83,7 @@ const SearchBar = () => {
       </form>
 
       {debouncedSearchTerm && (
-        <div className="relative z-20 mt-8 fade-in">
+        <div ref={resultsRef} className="relative z-20 mt-8 fade-in">
           {isLoading && debouncedSearchTerm ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
@@ -91,11 +112,15 @@ const SearchBar = () => {
                 ))}
               </div>
             </>
-          ) : debouncedSearchTerm ? (
+          ) : (
             <div className="text-center py-12">
-              <p className="text-lg text-gray-600">No matches found</p>
+              <p className="text-lg text-gray-600">
+                {showTooManyKeywords 
+                  ? "No matches found. Try fewer keywords for better results." 
+                  : "No matches found"}
+              </p>
             </div>
-          ) : null}
+          )}
         </div>
       )}
     </div>
