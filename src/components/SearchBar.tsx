@@ -2,7 +2,7 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
@@ -12,16 +12,10 @@ const SearchBar = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const { results, isLoading, error } = useSearchPlaces(debouncedSearchTerm);
 
-  // Debounce search term to prevent too many API calls
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [searchTerm]);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setDebouncedSearchTerm(searchTerm);
+  };
 
   const handleClear = () => {
     setSearchTerm("");
@@ -29,16 +23,15 @@ const SearchBar = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Using ChangeEvent instead of FormEvent for better input handling with value
     setSearchTerm(e.target.value);
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <div className="relative flex gap-2">
+      <form onSubmit={handleSubmit} className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
-            type="text"
+            type="search"
             value={searchTerm}
             onChange={handleSearch}
             placeholder="Search vegan brunch, hikes, eco hotels..."
@@ -50,6 +43,13 @@ const SearchBar = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 w-5 h-5 pointer-events-none" />
         </div>
         <Button 
+          type="submit" 
+          variant="default" 
+          className="rounded-full px-6"
+        >
+          Search
+        </Button>
+        <Button 
           variant="ghost"
           size="icon"
           onClick={handleClear}
@@ -59,11 +59,11 @@ const SearchBar = () => {
         >
           <X className="w-5 h-5" />
         </Button>
-      </div>
+      </form>
 
       {debouncedSearchTerm && (
-        <div className="mt-8">
-          {isLoading ? (
+        <div className="relative z-20 mt-8 fade-in">
+          {isLoading && debouncedSearchTerm ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-4">
@@ -91,11 +91,11 @@ const SearchBar = () => {
                 ))}
               </div>
             </>
-          ) : (
+          ) : debouncedSearchTerm ? (
             <div className="text-center py-12">
               <p className="text-lg text-gray-600">No matches found</p>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>
