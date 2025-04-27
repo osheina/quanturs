@@ -1,4 +1,3 @@
-
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,98 +9,79 @@ import RestaurantCard from "@/components/RestaurantCard";
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
-  
-  // Tokenize the search term
-  const searchTokens = debouncedSearchTerm
-    .trim()
-    .split(/\s+/)
-    .filter(token => token.length >= 2) // Only use tokens with 2+ characters
-    .slice(0, 5); // Limit to 5 keywords for performance
-  
-  const { results, isLoading, error } = useSearchPlaces(
-    searchTokens.length > 0 ? searchTokens : []
-  );
+  const inputRef    = useRef<HTMLInputElement>(null);
+  const resultsRef  = useRef<HTMLDivElement>(null);
 
-  // Debug logs to see what's happening
+  /* 1. ───────────────   Debounce & Tokenize   ─────────────── */
   useEffect(() => {
-    console.log('Search tokens:', searchTokens);
-    console.log('Search results:', results);
-    console.log('Is loading:', isLoading);
-    console.log('Error:', error);
-  }, [searchTokens, results, isLoading, error]);
+    const t = setTimeout(() => setDebouncedSearchTerm(searchTerm.trim()), 400);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const tokens = debouncedSearchTerm
+    .split(/\s+/)
+    .filter(t => t.length >= 2)
+    .slice(0, 5);
+
+  const { results, isLoading, error } = useSearchPlaces(tokens);
+
+  /* 2. ──────────────   Submit handler   ───────────────────── */
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with term:", searchTerm);
-    setDebouncedSearchTerm(searchTerm);
-    
-    // Remove focus from input
+    setDebouncedSearchTerm(searchTerm.trim());
     inputRef.current?.blur();
-    
-    // Scroll to results after a small delay to ensure they're rendered
-    setTimeout(() => {
-      if (resultsRef.current) {
-        console.log("Scrolling to results");
-        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 120);
   };
 
-  const handleClear = () => {
+  /* 3. ────────────   Helpers   ────────────────────────────── */
+  const clearSearch = () => {
     setSearchTerm("");
     setDebouncedSearchTerm("");
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
+  const showNoHits = debouncedSearchTerm && !isLoading && (!results || results.length === 0);
+  const showTooMany = tokens.length >= 3 && showNoHits;
 
-  const showNoResults = debouncedSearchTerm && !isLoading && (!results || results.length === 0);
-  const showTooManyKeywords = searchTokens.length >= 3 && showNoResults;
-
+  /* 4. ────────────   UI   ─────────────────────────────────── */
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <form onSubmit={handleSubmit} className="relative flex gap-2">
+      {/* Search field */}
+      <form onSubmit={onSubmit} className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
             ref={inputRef}
             type="search"
             value={searchTerm}
-            onChange={handleSearch}
-            placeholder='Search "vegan brunch LA" or "eco hotel Malibu"...'
-            className="pl-10 pr-4 py-6 text-lg text-foreground rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder='Try "vegan brunch LA" or "eco hotel Malibu"...'
+            className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
             autoComplete="off"
-            spellCheck="false"
-            lang="en"
+            spellCheck={false}
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 w-5 h-5 pointer-events-none" />
         </div>
-        <Button 
-          type="submit" 
-          variant="default" 
-          className="rounded-full px-6"
-        >
-          Search
-        </Button>
-        <Button 
+
+        <Button type="submit" className="rounded-full px-6">Search</Button>
+
+        <Button
+          type="button"
           variant="ghost"
           size="icon"
-          onClick={handleClear}
-          className="rounded-full"
-          type="button"
+          onClick={clearSearch}
           aria-label="Clear search"
+          className="rounded-full"
         >
           <X className="w-5 h-5" />
         </Button>
       </form>
 
+      {/* Results */}
       {debouncedSearchTerm && (
-        <div ref={resultsRef} className="relative z-20 mt-8 fade-in">
-          {isLoading && debouncedSearchTerm ? (
+        <div ref={resultsRef} className="mt-8 animate-fade-in">
+          {isLoading ? (
+            /* skeletons */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
+              {[...Array(3)].map((_, i) => (
                 <div key={i} className="space-y-4">
                   <Skeleton className="h-48 w-full rounded-lg" />
                   <Skeleton className="h-4 w-3/4" />
@@ -111,29 +91,34 @@ const SearchBar = () => {
             </div>
           ) : results && results.length > 0 ? (
             <>
-              <h2 className="text-xl font-semibold mb-6">Found {results.length} spots</h2>
+              <h2 className="text-xl font-semibold mb-6">
+                Found&nbsp;{results.length}&nbsp;spot{results.length > 1 && "s"}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.map((place) => (
+                {results.map(p => (
                   <RestaurantCard
-                    key={place.id}
+                    key={p.id}
                     image="https://images.unsplash.com/photo-1554679665-f5537f187268"
-                    name={place.name || ""}
-                    cuisine={place.type}
+                    name={p.name ?? ""}
+                    cuisine={p.type}
                     rating={4.5}
                     priceRange="$$$"
-                    description={place.notes || ""}
-                    location={place.location || ""}
+                    description={p.notes ?? ""}
+                    location={p.location ?? ""}
                   />
                 ))}
               </div>
             </>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-lg text-gray-600">
-                {showTooManyKeywords 
-                  ? "No matches found. Try fewer keywords for better results." 
-                  : "No matches found"}
-              </p>
+            <div className="text-center py-12 text-gray-600">
+              {showTooMany
+                ? "No matches — try fewer keywords"
+                : "No matches found"}
+              {error && (
+                <p className="mt-2 text-red-500 text-sm">
+                  {error.message}
+                </p>
+              )}
             </div>
           )}
         </div>
