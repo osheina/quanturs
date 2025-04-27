@@ -1,4 +1,3 @@
-
 export const restaurants = [
   {
     image: "https://images.unsplash.com/photo-1554679665-f5537f187268",
@@ -19,7 +18,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1590596988334-c465f7a0df4d",
+    image: "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d",
     name: "Nobu",
     cuisine: "Japanese Fusion",
     rating: 4.8,
@@ -46,7 +45,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1534939561126-855b8675edd7",
+    image: "/lovable-uploads/07eec794-9206-4349-9fb7-b163a350c8cb.png",
     name: "Erewhon Market",
     cuisine: "Organic & Health Food",
     rating: 4.7,
