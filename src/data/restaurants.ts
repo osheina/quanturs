@@ -1,7 +1,7 @@
 
 export const restaurants = [
   {
-    image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092",
+    image: "https://images.unsplash.com/photo-1554679665-f5537f187268",
     name: "Republique",
     cuisine: "French American",
     rating: 4.7,
@@ -10,7 +10,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1579027989536-b7b1f875659b",
+    image: "https://images.unsplash.com/photo-1514537099923-4c0fc7c73161",
     name: "Catch",
     cuisine: "Seafood & Sushi",
     rating: 4.9,
@@ -19,7 +19,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1583792870658-047e11155fdd",
+    image: "https://images.unsplash.com/photo-1590596988334-c465f7a0df4d",
     name: "Nobu",
     cuisine: "Japanese Fusion",
     rating: 4.8,
@@ -28,7 +28,7 @@ export const restaurants = [
     location: "Malibu, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
+    image: "https://images.unsplash.com/photo-1540914124281-342587941389",
     name: "Plant Food + Wine",
     cuisine: "Vegan Fine Dining",
     rating: 4.6,
@@ -37,7 +37,7 @@ export const restaurants = [
     location: "Venice, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1532509774891-141d37f25ae9",
+    image: "https://images.unsplash.com/photo-1461530927168-44328109da52",
     name: "Gracias Madre",
     cuisine: "Vegan Mexican",
     rating: 4.5,
@@ -46,7 +46,7 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1607013407627-6ee814329547",
+    image: "https://images.unsplash.com/photo-1534939561126-855b8675edd7",
     name: "Erewhon Market",
     cuisine: "Organic & Health Food",
     rating: 4.7,
@@ -55,7 +55,7 @@ export const restaurants = [
     location: "Los Angeles, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1615937722923-67f6deaf2cc9",
+    image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
     name: "True Food Kitchen",
     cuisine: "Health-Conscious American",
     rating: 4.4,
@@ -64,7 +64,7 @@ export const restaurants = [
     location: "Santa Monica, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1539136788836-5699e78bfc75",
+    image: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa",
     name: "Crossroads Kitchen",
     cuisine: "Vegan Mediterranean",
     rating: 4.6,
