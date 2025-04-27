@@ -20,12 +20,12 @@ export const restaurants = [
   },
   {
     image: "https://images.unsplash.com/photo-1473177104440-ffee2f376098",
-    name: "Gucci Osteria",
-    cuisine: "Italian Luxury",
-    rating: 5.0,
-    priceRange: "$$$$$",
-    description: "Exquisite Italian cuisine in an opulent setting with Gucci's signature elegance",
-    location: "Beverly Hills, CA"
+    name: "Catch LA",
+    cuisine: "Seafood & Sushi",
+    rating: 4.9,
+    priceRange: "$$$$",
+    description: "Trendy rooftop restaurant with spectacular views and fresh seafood",
+    location: "West Hollywood, CA"
   },
   {
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
@@ -38,12 +38,12 @@ export const restaurants = [
   },
   {
     image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
-    name: "Sky Lounge",
-    cuisine: "International Fusion",
-    rating: 4.7,
+    name: "Nobu Malibu",
+    cuisine: "Japanese Fusion",
+    rating: 4.8,
     priceRange: "$$$$",
-    description: "Panoramic city views with innovative fusion cuisine",
-    location: "Los Angeles, CA"
+    description: "Upscale Japanese cuisine with Pacific Ocean views",
+    location: "Malibu, CA"
   },
   {
     image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b",
@@ -62,5 +62,23 @@ export const restaurants = [
     priceRange: "$$",
     description: "Comfort food reimagined for the ketogenic lifestyle",
     location: "Los Angeles, CA"
+  },
+  {
+    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b",
+    name: "Republique",
+    cuisine: "French American",
+    rating: 4.7,
+    priceRange: "$$$",
+    description: "Contemporary French cuisine in a historic building with bakery",
+    location: "Los Angeles, CA"
+  },
+  {
+    image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+    name: "Crossroads Kitchen",
+    cuisine: "Vegan Mediterranean",
+    rating: 4.6,
+    priceRange: "$$$",
+    description: "Upscale plant-based Mediterranean cuisine by celebrity chef Tal Ronnen",
+    location: "West Hollywood, CA"
   }
 ];
