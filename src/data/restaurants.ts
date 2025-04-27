@@ -45,31 +45,13 @@ export const restaurants = [
     location: "West Hollywood, CA"
   },
   {
-    image: "https://images.unsplash.com/photo-1615486366333-3398e7cb4450?auto=format&fit=crop&w=1200&q=80",
-    name: "Erewhon Market",
-    cuisine: "Organic & Health Food",
-    rating: 4.7,
-    priceRange: "$$$",
-    description: "Upscale organic market with tonic bar and prepared foods",
-    location: "Los Angeles, CA"
-  },
-  {
-    image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
-    name: "True Food Kitchen",
-    cuisine: "Health-Conscious American",
-    rating: 4.4,
-    priceRange: "$$",
-    description: "Seasonal dishes following Dr. Weil's anti-inflammatory diet",
-    location: "Santa Monica, CA"
-  },
-  {
-    image: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa",
-    name: "Crossroads Kitchen",
-    cuisine: "Vegan Mediterranean",
-    rating: 4.6,
-    priceRange: "$$$",
-    description: "Upscale plant-based Mediterranean cuisine",
-    location: "West Hollywood, CA"
+  image: "https://images.unsplash.com/photo-1615486366333-3398e7cb4450?auto=format&fit=crop&w=1200&q=80",
+  name: "Erewhon Market",
+  cuisine: "Organic & Health Food",
+  rating: 4.7,
+  priceRange: "$$$",
+  description: "Upscale organic market with tonic bar and prepared foods",
+  location: "Los Angeles, CA"
   },
   {
     image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
