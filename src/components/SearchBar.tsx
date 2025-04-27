@@ -10,6 +10,7 @@ import RestaurantCard from "@/components/RestaurantCard";
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   
   // Tokenize the search term
@@ -27,10 +28,13 @@ const SearchBar = () => {
     e.preventDefault();
     setDebouncedSearchTerm(searchTerm);
     
+    // Remove focus from input
+    inputRef.current?.blur();
+    
     // Scroll to results after a small delay to ensure they're rendered
     setTimeout(() => {
       if (resultsRef.current) {
-        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);
   };
@@ -52,6 +56,7 @@ const SearchBar = () => {
       <form onSubmit={handleSubmit} className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
+            ref={inputRef}
             type="search"
             value={searchTerm}
             onChange={handleSearch}
