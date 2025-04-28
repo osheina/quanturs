@@ -25,8 +25,7 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
             <Button 
               variant="secondary" 
-              className="gap-2 opacity-50"
-              disabled
+              className="gap-2"
             >
               <Box className="w-4 h-4" />
               Preview in VR
