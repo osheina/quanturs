@@ -1,60 +1,64 @@
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useRef, useEffect } from "react";
-import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
 
+import { useState, useRef, useEffect } from "react";
+import { useSearchPlaces } from "@/hooks/useSearchPlaces";
+
 const SearchBar = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  /* ────────── state ────────── */
+  const [term, setTerm]                 = useState("");
+  const [debounced, setDebounced]       = useState("");
   const inputRef    = useRef<HTMLInputElement>(null);
   const resultsRef  = useRef<HTMLDivElement>(null);
 
-  /* 1. ───────────────   Debounce & Tokenize   ─────────────── */
+  /* ───── debounce (400 ms) ───── */
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearchTerm(searchTerm.trim()), 400);
+    const t = setTimeout(() => setDebounced(term.trim()), 400);
     return () => clearTimeout(t);
-  }, [searchTerm]);
+  }, [term]);
 
-  const tokens = debouncedSearchTerm
+  /* ───── tokenize search ───── */
+  const tokens = debounced
     .split(/\s+/)
     .filter(t => t.length >= 2)
     .slice(0, 5);
 
   const { results, isLoading, error } = useSearchPlaces(tokens);
 
-  /* 2. ──────────────   Submit handler   ───────────────────── */
+  /* ───── submit ───── */
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setDebouncedSearchTerm(searchTerm.trim());
+    setDebounced(term.trim());
     inputRef.current?.blur();
+
+    // прокрутка к итогам
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 120);
   };
 
-  /* 3. ────────────   Helpers   ────────────────────────────── */
-  const clearSearch = () => {
-    setSearchTerm("");
-    setDebouncedSearchTerm("");
+  const clear = () => {
+    setTerm("");
+    setDebounced("");
   };
 
-  const showNoHits = debouncedSearchTerm && !isLoading && (!results || results.length === 0);
-  const showTooMany = tokens.length >= 3 && showNoHits;
+  const showNoHits   = debounced && !isLoading && (!results || results.length === 0);
+  const showTooMany  = tokens.length >= 3 && showNoHits;
 
-  /* 4. ────────────   UI   ─────────────────────────────────── */
+  /* ───── UI ───── */
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* Search field */}
+      {/* search field */}
       <form onSubmit={onSubmit} className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
             ref={inputRef}
             type="search"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            value={term}
+            onChange={e => setTerm(e.target.value)}
             placeholder='Try "vegan brunch LA" or "eco hotel Malibu"...'
-            className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40 transition-colors"
+            className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40"
             autoComplete="off"
             spellCheck={false}
           />
@@ -67,7 +71,7 @@ const SearchBar = () => {
           type="button"
           variant="ghost"
           size="icon"
-          onClick={clearSearch}
+          onClick={clear}
           aria-label="Clear search"
           className="rounded-full"
         >
@@ -75,8 +79,8 @@ const SearchBar = () => {
         </Button>
       </form>
 
-      {/* Results */}
-      {debouncedSearchTerm && (
+      {/* results */}
+      {debounced && (
         <div ref={resultsRef} className="mt-8 animate-fade-in">
           {isLoading ? (
             /* skeletons */
@@ -115,9 +119,7 @@ const SearchBar = () => {
                 ? "No matches — try fewer keywords"
                 : "No matches found"}
               {error && (
-                <p className="mt-2 text-red-500 text-sm">
-                  {error.message}
-                </p>
+                <p className="mt-2 text-red-500 text-sm">{error.message}</p>
               )}
             </div>
           )}
