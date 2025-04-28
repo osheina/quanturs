@@ -1,4 +1,3 @@
-
 import { Box } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
               className="gap-2"
             >
               <Box className="w-4 h-4" />
-              Preview in VR
+              Coming Soon
             </Button>
           </div>
         </CardContent>
