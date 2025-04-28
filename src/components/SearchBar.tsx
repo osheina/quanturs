@@ -3,24 +3,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
-
-import { useState, useRef, useEffect } from "react";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 
+import { useState, useRef, useEffect } from "react";
+
 const SearchBar = () => {
-  /* ────────── state ────────── */
-  const [term, setTerm]                 = useState("");
-  const [debounced, setDebounced]       = useState("");
+  /* ───── state ───── */
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debounced, setDebounced]   = useState("");
   const inputRef    = useRef<HTMLInputElement>(null);
   const resultsRef  = useRef<HTMLDivElement>(null);
 
-  /* ───── debounce (400 ms) ───── */
+  /* ───── debounce ───── */
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(term.trim()), 400);
+    const t = setTimeout(() => setDebounced(searchTerm.trim()), 400);
     return () => clearTimeout(t);
-  }, [term]);
+  }, [searchTerm]);
 
-  /* ───── tokenize search ───── */
+  /* ───── tokenize & query ───── */
   const tokens = debounced
     .split(/\s+/)
     .filter(t => t.length >= 2)
@@ -28,25 +28,25 @@ const SearchBar = () => {
 
   const { results, isLoading, error } = useSearchPlaces(tokens);
 
-  /* ───── submit ───── */
+  /* ───── handlers ───── */
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setDebounced(term.trim());
+    setDebounced(searchTerm.trim());
     inputRef.current?.blur();
-
-    // прокрутка к итогам
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 120);
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 120);
   };
 
   const clear = () => {
-    setTerm("");
+    setSearchTerm("");
     setDebounced("");
   };
 
-  const showNoHits   = debounced && !isLoading && (!results || results.length === 0);
-  const showTooMany  = tokens.length >= 3 && showNoHits;
+  /* ───── render ───── */
+  const showNoHits = debounced && !isLoading && (!results || results.length === 0);
+  const showTooMany = tokens.length >= 3 && showNoHits;
 
-  /* ───── UI ───── */
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* search field */}
@@ -55,8 +55,8 @@ const SearchBar = () => {
           <Input
             ref={inputRef}
             type="search"
-            value={term}
-            onChange={e => setTerm(e.target.value)}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
             placeholder='Try "vegan brunch LA" or "eco hotel Malibu"...'
             className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40"
             autoComplete="off"
@@ -66,24 +66,22 @@ const SearchBar = () => {
         </div>
 
         <Button type="submit" className="rounded-full px-6">Search</Button>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={clear}
-          aria-label="Clear search"
-          className="rounded-full"
-        >
+        <Button variant="ghost" size="icon" onClick={clear} className="rounded-full" aria-label="Clear">
           <X className="w-5 h-5" />
         </Button>
       </form>
 
       {/* results */}
       {debounced && (
-        <div ref={resultsRef} className="mt-8 animate-fade-in">
+        <div
+          ref={resultsRef}
+          className="
+            mt-8 animate-fade-in
+            max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin
+            rounded-xl backdrop-blur-sm bg-black/20
+          "
+        >
           {isLoading ? (
-            /* skeletons */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="space-y-4">
@@ -93,7 +91,7 @@ const SearchBar = () => {
                 </div>
               ))}
             </div>
-          ) : results && results.length > 0 ? (
+          ) : results && results.length ? (
             <>
               <h2 className="text-xl font-semibold mb-6">
                 Found&nbsp;{results.length}&nbsp;spot{results.length > 1 && "s"}
@@ -114,12 +112,12 @@ const SearchBar = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-12 text-gray-600">
+            <div className="text-center py-12 text-gray-200">
               {showTooMany
                 ? "No matches — try fewer keywords"
                 : "No matches found"}
               {error && (
-                <p className="mt-2 text-red-500 text-sm">{error.message}</p>
+                <p className="mt-2 text-red-400 text-sm">{error.message}</p>
               )}
             </div>
           )}
