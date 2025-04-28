@@ -166,7 +166,7 @@ const AIGuideSection = () => {
         <h2 className="text-2xl font-bold text-primary">Create Your AI Travel Guide</h2>
       </div>
       
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-700 mb-6">
         Share your preferences, and our AI will create the perfect eco-friendly itinerary for you.
       </p>
 
@@ -177,14 +177,14 @@ const AIGuideSection = () => {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder={placeholder}
-            className="pl-4 pr-4 py-6 text-lg rounded-xl border-2 border-primary/20 focus:border-primary/40 transition-colors"
+            className="pl-4 pr-4 py-6 text-lg rounded-xl border-2 border-primary/20 focus:border-primary/40 transition-colors bg-white text-gray-900"
             onFocus={rotateExample}
             disabled={isGenerating}
           />
         </div>
         <Button 
           type="submit" 
-          className="w-full py-6 text-lg rounded-xl bg-primary hover:bg-primary/90 transition-colors"
+          className="w-full py-6 text-lg rounded-xl bg-primary hover:bg-primary/90 transition-colors text-white"
           disabled={isGenerating}
         >
           {isGenerating ? "Creating your guide..." : "Create Guide"}
@@ -193,9 +193,9 @@ const AIGuideSection = () => {
 
       {/* Dialog for generated AI guide */}
       <Dialog open={generatedGuide !== null} onOpenChange={handleCloseGeneratedGuide}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl">{generatedGuide?.title}</DialogTitle>
+            <DialogTitle className="text-2xl text-gray-900">{generatedGuide?.title}</DialogTitle>
           </DialogHeader>
           {generatedGuide && renderGuideContent(generatedGuide)}
         </DialogContent>
@@ -203,9 +203,9 @@ const AIGuideSection = () => {
 
       {/* Dialog for premade guide preview */}
       <Dialog open={selectedPremadeGuide !== null} onOpenChange={handleClosePremadeGuide}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl">{selectedPremadeGuide?.title}</DialogTitle>
+            <DialogTitle className="text-2xl text-gray-900">{selectedPremadeGuide?.title}</DialogTitle>
           </DialogHeader>
           {selectedPremadeGuide && renderGuideContent(selectedPremadeGuide)}
         </DialogContent>
@@ -213,11 +213,11 @@ const AIGuideSection = () => {
 
       {/* Featured Guides Section */}
       <div className="mt-12">
-        <h3 className="text-xl font-semibold mb-6">Featured Guides</h3>
+        <h3 className="text-xl font-semibold mb-6 text-gray-900">Featured Guides</h3>
         {isLoadingGuides ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6">
+              <Card key={i} className="p-6 bg-white">
                 <div className="space-y-4 animate-pulse">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                   <div className="h-3 bg-gray-200 rounded w-full"></div>
@@ -227,21 +227,21 @@ const AIGuideSection = () => {
             ))}
           </div>
         ) : premadeGuides.length === 0 ? (
-          <Card className="p-6 text-center">
-            <p className="text-gray-600">No featured guides available at the moment.</p>
-            <p className="text-sm text-gray-500 mt-2">Try creating a custom guide above!</p>
+          <Card className="p-6 text-center bg-white">
+            <p className="text-gray-700">No featured guides available at the moment.</p>
+            <p className="text-sm text-gray-600 mt-2">Try creating a custom guide above!</p>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {premadeGuides.map((guide) => (
-              <Card key={guide.id} className="hover:shadow-lg transition-shadow">
+              <Card key={guide.id} className="hover:shadow-lg transition-shadow bg-white">
                 <div className="p-6">
-                  <h4 className="text-lg font-semibold">{guide.title}</h4>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{guide.description}</p>
+                  <h4 className="text-lg font-semibold text-gray-900">{guide.title}</h4>
+                  <p className="text-gray-700 mb-4 line-clamp-2">{guide.description}</p>
                   <Button 
                     variant="outline"
                     onClick={() => handlePreviewGuide(guide.id || "")}
-                    className="w-full"
+                    className="w-full text-gray-900"
                     disabled={isLoadingPremadeGuide}
                   >
                     {isLoadingPremadeGuide ? "Loading..." : "Preview Guide"}
@@ -252,7 +252,6 @@ const AIGuideSection = () => {
           </div>
         )}
       </div>
-
     </div>
   );
 };
