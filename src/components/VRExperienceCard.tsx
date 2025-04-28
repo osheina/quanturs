@@ -1,5 +1,5 @@
 
-import { Box, Clock } from "lucide-react";
+import { Box } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -7,7 +7,6 @@ import VRScene from "./VRScene";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Text } from "@react-three/drei";
 import { vrExperiences } from "@/data/vrExperiences";
-import { Badge } from "@/components/ui/badge";
 
 interface VRExperienceCardProps {
   image: string;
@@ -23,12 +22,12 @@ const VRExperienceCard = ({ image, title, duration }: VRExperienceCardProps) => 
       <Card className="overflow-hidden group hover:shadow-lg transition-shadow duration-300">
         <CardContent className="p-0 relative">
           <img src={image} alt={title} className="w-full h-48 object-cover" />
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3">
-            <Badge variant="secondary" className="backdrop-blur-sm">
-              <Clock className="w-4 h-4 mr-1" />
-              Coming Soon
-            </Badge>
-            <Button variant="secondary" className="gap-2 opacity-50 cursor-not-allowed">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <Button 
+              variant="secondary" 
+              className="gap-2 opacity-50"
+              disabled
+            >
               <Box className="w-4 h-4" />
               Preview in VR
             </Button>
