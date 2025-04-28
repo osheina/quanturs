@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           diet_tags: string | null
           id: number
+          image_url: string | null
           location: string | null
           name: string | null
           notes: string | null
@@ -22,6 +23,7 @@ export type Database = {
         Insert: {
           diet_tags?: string | null
           id?: number
+          image_url?: string | null
           location?: string | null
           name?: string | null
           notes?: string | null
@@ -31,6 +33,7 @@ export type Database = {
         Update: {
           diet_tags?: string | null
           id?: number
+          image_url?: string | null
           location?: string | null
           name?: string | null
           notes?: string | null
