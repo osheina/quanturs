@@ -7,20 +7,33 @@ import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 
 import { useState, useRef, useEffect } from "react";
 
+const getImageUrl = (type: string) => {
+  const randomId = Math.floor(Math.random() * 1000);
+  switch (type) {
+    case 'cafe':
+      return `https://source.unsplash.com/random/800x600/?vegan,cafe,brunch&sig=${randomId}`;
+    case 'hotel':
+      return `https://source.unsplash.com/random/800x600/?eco,hotel,retreat&sig=${randomId}`;
+    case 'park':
+      return `https://source.unsplash.com/random/800x600/?hidden,trail,park&sig=${randomId}`;
+    case 'market':
+      return `https://source.unsplash.com/random/800x600/?organic,market,local&sig=${randomId}`;
+    default:
+      return `https://source.unsplash.com/random/800x600/?travel,nature&sig=${randomId}`;
+  }
+};
+
 const SearchBar = () => {
-  /* ───── state ───── */
   const [searchTerm, setSearchTerm] = useState("");
   const [debounced, setDebounced]   = useState("");
   const inputRef    = useRef<HTMLInputElement>(null);
   const resultsRef  = useRef<HTMLDivElement>(null);
 
-  /* ───── debounce ───── */
   useEffect(() => {
     const t = setTimeout(() => setDebounced(searchTerm.trim()), 400);
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  /* ───── tokenize & query ───── */
   const tokens = debounced
     .split(/\s+/)
     .filter(t => t.length >= 2)
@@ -28,7 +41,6 @@ const SearchBar = () => {
 
   const { results, isLoading, error } = useSearchPlaces(tokens);
 
-  /* ───── handlers ───── */
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setDebounced(searchTerm.trim());
@@ -43,13 +55,11 @@ const SearchBar = () => {
     setDebounced("");
   };
 
-  /* ───── render ───── */
   const showNoHits = debounced && !isLoading && (!results || results.length === 0);
   const showTooMany = tokens.length >= 3 && showNoHits;
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* search field */}
       <form onSubmit={onSubmit} className="relative flex gap-2">
         <div className="relative flex-1">
           <Input
@@ -71,15 +81,10 @@ const SearchBar = () => {
         </Button>
       </form>
 
-      {/* results */}
       {debounced && (
         <div
           ref={resultsRef}
-          className="
-            mt-8 animate-fade-in
-            max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin
-            rounded-xl backdrop-blur-sm bg-black/20
-          "
+          className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin rounded-xl backdrop-blur-sm bg-black/20"
         >
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -100,7 +105,7 @@ const SearchBar = () => {
                 {results.map(p => (
                   <RestaurantCard
                     key={p.id}
-                    image="https://images.unsplash.com/photo-1554679665-f5537f187268"
+                    image={getImageUrl(p.type)}
                     name={p.name ?? ""}
                     cuisine={p.type}
                     rating={4.5}
@@ -116,9 +121,7 @@ const SearchBar = () => {
               {showTooMany
                 ? "No matches — try fewer keywords"
                 : "No matches found"}
-              {error && (
-                <p className="mt-2 text-red-400 text-sm">{error.message}</p>
-              )}
+              {error && <p className="mt-2 text-red-400 text-sm">{error.message}</p>}
             </div>
           )}
         </div>
