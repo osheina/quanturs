@@ -1,4 +1,3 @@
-
 import HeroSection from "@/components/HeroSection";
 import AIGuideSection from "@/components/AIGuideSection";
 import MainContent from "@/components/MainContent";
@@ -26,6 +25,14 @@ const Index = () => {
             />
           ))}
         </div>
+      </div>
+      
+      {/* Sustainability Impact Section */}
+      <div className="container mx-auto text-center py-8 mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Sustainability Impact</h2>
+        <p className="text-gray-600 text-lg">
+          CO₂-Footprint Estimator — <span className="text-primary font-bold">Coming Soon</span> 🌱
+        </p>
       </div>
       
       <TestimonialsSection />
