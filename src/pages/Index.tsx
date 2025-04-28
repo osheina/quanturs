@@ -5,7 +5,6 @@ import MainContent from "@/components/MainContent";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import { vrExperiences } from "@/data/vrExperiences";
 import VRExperienceCard from "@/components/VRExperienceCard";
-import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -26,11 +25,6 @@ const Index = () => {
               duration={experience.duration}
             />
           ))}
-        </div>
-        <div className="text-center mt-6">
-          <Link to="/vr-experiences" className="text-primary hover:text-primary/80">
-            View all VR experiences →
-          </Link>
         </div>
       </div>
       
