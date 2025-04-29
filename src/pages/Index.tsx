@@ -1,3 +1,4 @@
+
 import HeroSection from '@/components/HeroSection';
 import AIGuideSection from '@/components/AIGuideSection';
 import MainContent from '@/components/MainContent';

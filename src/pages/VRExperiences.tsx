@@ -3,6 +3,22 @@ import React from "react";
 import { vrExperiences } from "@/data/vrExperiences";
 import VRExperienceCard from "@/components/VRExperienceCard";
 
+// Function to determine image URL based on experience type
+const getImageUrl = (type: string) => {
+  switch (type) {
+    case 'cafe':
+      return 'https://source.unsplash.com/800x600/?vegan,cafe,brunch';
+    case 'hotel':
+      return 'https://source.unsplash.com/800x600/?eco,hotel,retreat';
+    case 'park':
+      return 'https://source.unsplash.com/800x600/?hidden,trail,park';
+    case 'market':
+      return 'https://source.unsplash.com/800x600/?organic,market,local';
+    default:
+      return 'https://source.unsplash.com/800x600/?travel,nature';
+  }
+};
+
 const VRExperiences = () => {
   return (
     <div className="container mx-auto py-8">
@@ -11,7 +27,7 @@ const VRExperiences = () => {
         {vrExperiences.map((experience, index) => (
           <VRExperienceCard
             key={index}
-            image={experience.image}
+            image={getImageUrl(experience.type)}
             title={experience.title}
             duration={experience.duration}
           />
