@@ -7,27 +7,11 @@ import { useSearchPlaces } from "@/hooks/useSearchPlaces";
 
 import { useState, useRef, useEffect } from "react";
 
-const getImageUrl = (type: string) => {
-  const randomId = Math.floor(Math.random() * 1000);
-  switch (type) {
-    case 'cafe':
-      return `https://source.unsplash.com/random/800x600/?vegan,cafe,brunch&sig=${randomId}`;
-    case 'hotel':
-      return `https://source.unsplash.com/random/800x600/?eco,hotel,retreat&sig=${randomId}`;
-    case 'park':
-      return `https://source.unsplash.com/random/800x600/?hidden,trail,park&sig=${randomId}`;
-    case 'market':
-      return `https://source.unsplash.com/random/800x600/?organic,market,local&sig=${randomId}`;
-    default:
-      return `https://source.unsplash.com/random/800x600/?travel,nature&sig=${randomId}`;
-  }
-};
-
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [debounced, setDebounced]   = useState("");
-  const inputRef    = useRef<HTMLInputElement>(null);
-  const resultsRef  = useRef<HTMLDivElement>(null);
+  const [debounced, setDebounced] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(searchTerm.trim()), 400);
@@ -105,7 +89,7 @@ const SearchBar = () => {
                 {results.map(p => (
                   <RestaurantCard
                     key={p.id}
-                    image={getImageUrl(p.type)}
+                    image={p.image_url}
                     name={p.name ?? ""}
                     cuisine={p.type}
                     rating={4.5}
