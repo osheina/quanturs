@@ -9,10 +9,10 @@ const Navigation = () => {
         <Link to="/" className="text-2xl font-bold text-primary">EcoTravel</Link>
         <ul className="flex space-x-6">
           <li>
-            <Link to="/" className="text-gray-700 hover:text-primary transition-colors">Главная</Link>
+            <Link to="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link>
           </li>
           <li>
-            <Link to="/vr-experiences" className="text-gray-700 hover:text-primary transition-colors">VR опыты</Link>
+            <Link to="/vr-experiences" className="text-gray-700 hover:text-primary transition-colors">VR Experiences</Link>
           </li>
         </ul>
       </div>

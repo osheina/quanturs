@@ -1,3 +1,4 @@
+
 import { Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -49,8 +50,7 @@ const AIGuideSection = () => {
 
   const examples = [
     "Weekend plan in Los Angeles with vegan restaurants",
-    "5-day eco-tour in Swiss Alps",
-    "One day in Tokyo using public transport"
+    "3-day eco-tour in San Francisco",
   ];
 
   const rotateExample = () => {
