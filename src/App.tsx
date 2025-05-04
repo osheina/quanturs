@@ -16,18 +16,6 @@ const App = () => {
       <BrowserRouter>
         <TooltipProvider>
           <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#F2FCE2] to-[#E5DEFF]">
-            <header className="bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] py-4 shadow-md">
-              <div className="container mx-auto px-4 flex justify-between items-center">
-                <h1 className="text-white text-2xl font-bold">EcoTravel</h1>
-                <nav>
-                  <ul className="flex space-x-6">
-                    <li><a href="/" className="text-white hover:text-[#FDE1D3] transition-colors">Home</a></li>
-                    <li><a href="/vr-experiences" className="text-white hover:text-[#FDE1D3] transition-colors">VR Experiences</a></li>
-                  </ul>
-                </nav>
-              </div>
-            </header>
-            
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Index />} />
