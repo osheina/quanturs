@@ -9,70 +9,51 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
 
     const isLosAngeles =
       prompt.toLowerCase().includes("los angeles") ||
-      prompt.toLowerCase().includes("la ");
+      prompt.toLowerCase().includes("la ") ||
+      prompt.toLowerCase().includes("l.a.") ||
+      prompt.toLowerCase().includes("l.a ") ||
+      prompt.toLowerCase().includes("los angeles, ca") ||
+      prompt.toLowerCase().includes("los angeles, california");
+
+    // Extract number of days from prompt
+    const daysMatch = prompt.match(/(\d+)\s*day/i);
+    const numDays = daysMatch ? parseInt(daysMatch[1]) : 2;
 
     /* --- basic content scaffold --- */
     const content = {
-      days: [
-        {
-          title: "Day 1",
-          activities: [
-            {
-              time: "9:00 AM",
-              activity: isLosAngeles
-                ? "Breakfast at Cafe Gratitude"
-                : "Breakfast at a local eco-friendly café",
-              location: isLosAngeles ? "Venice" : "Downtown",
-              notes: isLosAngeles
-                ? "Famous plant-based cuisine and positive atmosphere"
-                : "Try their organic coffee and vegan options"
-            },
-            {
-              time: "11:00 AM",
-              activity: isLosAngeles
-                ? "Santa Monica Farmers Market"
-                : "Visit the local farmers market",
-              location: isLosAngeles ? "Arizona Ave, Santa Monica" : "Main Square",
-              notes: isLosAngeles
-                ? "Top LA market with local produce and artisanal goods"
-                : "Great place to meet locals and buy fresh produce"
-            },
-            {
-              time: "2:00 PM",
-              activity: isLosAngeles ? "Explore the Getty Center" : "City sustainability tour",
-              location: isLosAngeles ? "1200 Getty Center Dr" : "City Center",
-              notes: isLosAngeles
-                ? "Architecture, gardens and stunning city views"
-                : "Learn about local eco-friendly initiatives"
-            }
-          ]
-        },
-        {
-          title: "Day 2",
-          activities: [
-            {
-              time: "10:00 AM",
-              activity: isLosAngeles
-                ? "Hike Runyon Canyon Park"
-                : "Hike in a nearby nature reserve",
-              location: isLosAngeles ? "Hollywood" : "Nature Reserve",
-              notes: isLosAngeles
-                ? "Popular trail with great skyline views"
-                : "Scenic trail with diverse flora and fauna"
-            },
-            {
-              time: "3:00 PM",
-              activity: isLosAngeles
-                ? "The Grove & Original Farmers Market"
-                : "Tour sustainable local businesses",
-              location: isLosAngeles ? "189 The Grove Dr" : "Various locations",
-              notes: isLosAngeles
-                ? "Outdoor shopping, dining and entertainment"
-                : "See how local businesses implement eco practices"
-            }
-          ]
-        }
-      ],
+      days: Array.from({ length: numDays }, (_, i) => ({
+        title: `Day ${i + 1}`,
+        activities: [
+          {
+            time: "9:00 AM",
+            activity: isLosAngeles
+              ? "Breakfast at Cafe Gratitude"
+              : "Breakfast at a local eco-friendly café",
+            location: isLosAngeles ? "Venice" : "Downtown",
+            notes: isLosAngeles
+              ? "Famous plant-based cuisine and positive atmosphere"
+              : "Try their organic coffee and vegan options"
+          },
+          {
+            time: "11:00 AM",
+            activity: isLosAngeles
+              ? "Santa Monica Farmers Market"
+              : "Visit the local farmers market",
+            location: isLosAngeles ? "Arizona Ave, Santa Monica" : "Main Square",
+            notes: isLosAngeles
+              ? "Top LA market with local produce and artisanal goods"
+              : "Great place to meet locals and buy fresh produce"
+          },
+          {
+            time: "2:00 PM",
+            activity: isLosAngeles ? "Explore the Getty Center" : "City sustainability tour",
+            location: isLosAngeles ? "1200 Getty Center Dr" : "City Center",
+            notes: isLosAngeles
+              ? "Architecture, gardens and stunning city views"
+              : "Learn about local eco-friendly initiatives"
+          }
+        ]
+      })),
       recommendations: {
         restaurants: isLosAngeles
           ? ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"]
@@ -91,30 +72,54 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
       }
     };
 
-    if (isLosAngeles) {
-      content.days.push({
-        title: "Day 3",
-        activities: [
-          {
-            time: "9:30 AM",
-            activity: "Stroll the Venice Canals",
-            location: "Venice",
-            notes: "Picturesque walkways inspired by Venice, Italy"
-          },
-          {
-            time: "1:00 PM",
-            activity: "Lunch at Sage Plant-Based Bistro",
-            location: "Echo Park",
-            notes: "Delicious plant-based menu with outdoor seating"
-          },
-          {
-            time: "4:00 PM",
-            activity: "Sunset at Griffith Observatory",
-            location: "2800 E Observatory Rd",
-            notes: "Spectacular city views and free telescopes"
-          }
-        ]
-      });
+    // Add more specific activities for LA if it's a longer stay
+    if (isLosAngeles && numDays > 2) {
+      const additionalActivities = [
+        {
+          time: "9:30 AM",
+          activity: "Stroll the Venice Canals",
+          location: "Venice",
+          notes: "Picturesque walkways inspired by Venice, Italy"
+        },
+        {
+          time: "1:00 PM",
+          activity: "Lunch at Sage Plant-Based Bistro",
+          location: "Echo Park",
+          notes: "Delicious plant-based menu with outdoor seating"
+        },
+        {
+          time: "4:00 PM",
+          activity: "Sunset at Griffith Observatory",
+          location: "2800 E Observatory Rd",
+          notes: "Spectacular city views and free telescopes"
+        },
+        {
+          time: "10:00 AM",
+          activity: "Visit The Broad Museum",
+          location: "Downtown LA",
+          notes: "Contemporary art museum with free admission"
+        },
+        {
+          time: "2:00 PM",
+          activity: "Explore The Last Bookstore",
+          location: "Downtown LA",
+          notes: "Unique bookstore with art installations"
+        },
+        {
+          time: "4:00 PM",
+          activity: "Walk through Grand Central Market",
+          location: "Downtown LA",
+          notes: "Historic food hall with diverse vendors"
+        }
+      ];
+
+      // Distribute additional activities across remaining days
+      for (let i = 2; i < numDays; i++) {
+        const dayActivities = additionalActivities.slice((i - 2) * 3, (i - 1) * 3);
+        if (dayActivities.length > 0) {
+          content.days[i].activities = dayActivities;
+        }
+      }
     }
 
     /* --- write to DB --- */
