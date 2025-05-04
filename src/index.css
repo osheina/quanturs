@@ -15,6 +15,16 @@
   }
 }
 
+:root {
+  --color-primary: #8B5CF6;
+  --color-primary-hover: #7C4DF1;
+  --color-secondary: #D946EF;
+  --color-tertiary: #6E59A5;
+  --color-light: #F2FCE2;
+  --color-soft: #E5DEFF;
+  --color-dark: #1A1F2C;
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -59,4 +69,31 @@
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
+}
+
+.card-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.bg-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Custom button styling */
+.btn-primary {
+  @apply bg-[#8B5CF6] hover:bg-[#7C4DF1] text-white transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-[#D946EF] hover:bg-[#C722E0] text-white transition-colors;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
 }
