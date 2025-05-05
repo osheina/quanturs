@@ -20,7 +20,7 @@ https://quantum-eco-pathway.lovable.app
    - Hybrid recommendation engine (collaborative + content + reinforcement learning)  
    - In-app CO₂-footprint estimator  
    - Immersive VR previews of top locations  
-   - Expansion to San Francisco, New York City & beyond  
+   - Expansion to Chicago, New York City & beyond  
 
 ---
 
