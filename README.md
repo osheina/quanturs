@@ -36,6 +36,6 @@ https://quantum-eco-pathway.lovable.app
 ## 🛠️ Tech Stack  
 - **Frontend:** Vite + TypeScript + React + shadcn-ui + Tailwind CSS  
 - **State & Data:** Supabase (PostgreSQL + RLS policies)  
-- **AI & Backend:** OpenAI (gpt-3.5-turbo) for text correction & guide generation  
+- **AI & Backend**: OpenAI (gpt-4) for text correction & guide generation
 - **Mapping:** React-Leaflet (OpenStreetMap) for PoI previews  
 ---
