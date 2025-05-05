@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       quanturs_places: {
         Row: {
+          city: string | null
           diet_tags: string | null
           id: number
           image_url: string | null
@@ -21,6 +22,7 @@ export type Database = {
           vibe: string | null
         }
         Insert: {
+          city?: string | null
           diet_tags?: string | null
           id?: number
           image_url?: string | null
@@ -31,6 +33,7 @@ export type Database = {
           vibe?: string | null
         }
         Update: {
+          city?: string | null
           diet_tags?: string | null
           id?: number
           image_url?: string | null
