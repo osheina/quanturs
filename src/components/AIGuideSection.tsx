@@ -1,4 +1,3 @@
-
 import { Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -9,12 +8,13 @@ import { Card } from "@/components/ui/card";
 import { generateAIGuide, fetchPremadeGuides, downloadGuide } from "@/services/guideService";
 import { TravelGuide } from "@/models/TravelGuide";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import React from "react";
 
 const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
   const { toast } = useToast();
   const [placeholder, setPlaceholder] = useState<string>(
-    "Weekend plan in Los Angeles with vegan restaurants"
+    "5 days in Los Angeles with vegan food"
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGuide, setGeneratedGuide] = useState<TravelGuide | null>(null);
@@ -49,8 +49,10 @@ const AIGuideSection = () => {
   });
 
   const examples = [
-    "Weekend plan in Los Angeles with vegan restaurants",
-    "3-day eco-tour in San Francisco",
+    "Weekend in Los Angeles with vegan restaurants",
+    "5 days in California for eco-tourism",
+    "3 days in LA for sustainable shopping",
+    "3-day eco-tour in San Francisco"
   ];
 
   const rotateExample = () => {
@@ -76,7 +78,16 @@ const AIGuideSection = () => {
       description: "Our AI is crafting the perfect eco-friendly itinerary for you.",
     });
 
-    createGuideMutation.mutate(prompt);
+    createGuideMutation.mutate(prompt, {
+      onError: (error: any) => {
+        setIsGenerating(false);
+        toast({
+          title: "Region Not Supported",
+          description: error?.message || "Only Los Angeles and California are supported at the moment.",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   const handleCloseGeneratedGuide = () => {
