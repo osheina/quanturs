@@ -1,79 +1,120 @@
 import { supabase } from "@/integrations/supabase/client";
 import { TravelGuide } from "@/models/TravelGuide";
+import { Database } from "@/integrations/supabase/types";
+
+type Place = Database['public']['Tables']['quanturs_places']['Row'];
+
+/* ----------  get filtered recommendations ---------- */
+async function getFilteredRecommendations(tags: string[]): Promise<Place[]> {
+  try {
+    if (!tags.length) {
+      console.warn("No tags provided for filtering recommendations");
+      return [];
+    }
+
+    // Build the filter conditions for each tag
+    const filterConditions = tags.map(tag => `diet_tags.ilike.%${tag}%`).join(',');
+    
+    // Query places with matching tags
+    const { data, error } = await supabase
+      .from("quanturs_places")
+      .select("*")
+      .or(filterConditions);
+    
+    if (error) throw error;
+    
+    if (!data || data.length === 0) {
+      console.warn("No places found matching the provided tags:", tags);
+      return [];
+    }
+
+    // Shuffle the results and take up to 3 random places
+    const shuffled = data.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(3, shuffled.length));
+  } catch (e) {
+    console.error("Error getting filtered recommendations:", e);
+    return [];
+  }
+}
 
 /* ----------  AI generator (mock) ---------- */
-export async function generateAIGuide(prompt: string): Promise<TravelGuide | null> {
+export async function generateAIGuide(prompt: string, selectedTags: string[] = ['eco', 'stylish', 'vegan']): Promise<TravelGuide | null> {
   try {
     // Simulated AI response (no API keys needed for now)
     const guideTitle = `Guide for: ${prompt.slice(0, 30)}${prompt.length > 30 ? "…" : ""}`;
 
-    const isLosAngeles =
+    const isSupportedCity =
       prompt.toLowerCase().includes("los angeles") ||
-      prompt.toLowerCase().includes("la ") ||
-      prompt.toLowerCase().includes("l.a.") ||
-      prompt.toLowerCase().includes("l.a ") ||
-      prompt.toLowerCase().includes("los angeles, ca") ||
-      prompt.toLowerCase().includes("los angeles, california");
+      /\bla\b/i.test(prompt) ||
+      prompt.toLowerCase().includes("california") ||
+      prompt.toLowerCase().includes("san francisco") ||
+      /\bsf\b/i.test(prompt) ||
+      prompt.toLowerCase().includes("san diego");
+
+    if (!isSupportedCity) {
+      throw new Error("Sorry, only Los Angeles, LA, California, San Francisco, SF, and San Diego are supported at the moment.");
+    }
 
     // Extract number of days from prompt
     const daysMatch = prompt.match(/(\d+)\s*day/i);
     const numDays = daysMatch ? parseInt(daysMatch[1]) : 2;
 
-    /* --- basic content scaffold --- */
+    // Определяем город
+    const city = (() => {
+      if (prompt.toLowerCase().includes("los angeles") || /\bla\b/i.test(prompt)) return "la";
+      if (prompt.toLowerCase().includes("san francisco") || /\bsf\b/i.test(prompt)) return "sf";
+      if (prompt.toLowerCase().includes("san diego")) return "sd";
+      if (prompt.toLowerCase().includes("california")) return "ca";
+      return "other";
+    })();
+
+    // Можно добавить уникальные активности для каждого города
+    const cityActivities = {
+      la: [], // LA-specific activities (можно добавить позже)
+      sf: [], // SF-specific activities (можно добавить позже)
+      sd: []  // SD-specific activities (можно добавить позже)
+    };
+
+    // Get filtered recommendations based on selected tags
+    const recommendations = await getFilteredRecommendations(selectedTags);
+
+    // Генерируем дни
     const content = {
       days: Array.from({ length: numDays }, (_, i) => ({
         title: `Day ${i + 1}`,
-        activities: [
-          {
-            time: "9:00 AM",
-            activity: isLosAngeles
-              ? "Breakfast at Cafe Gratitude"
-              : "Breakfast at a local eco-friendly café",
-            location: isLosAngeles ? "Venice" : "Downtown",
-            notes: isLosAngeles
-              ? "Famous plant-based cuisine and positive atmosphere"
-              : "Try their organic coffee and vegan options"
-          },
-          {
-            time: "11:00 AM",
-            activity: isLosAngeles
-              ? "Santa Monica Farmers Market"
-              : "Visit the local farmers market",
-            location: isLosAngeles ? "Arizona Ave, Santa Monica" : "Main Square",
-            notes: isLosAngeles
-              ? "Top LA market with local produce and artisanal goods"
-              : "Great place to meet locals and buy fresh produce"
-          },
-          {
-            time: "2:00 PM",
-            activity: isLosAngeles ? "Explore the Getty Center" : "City sustainability tour",
-            location: isLosAngeles ? "1200 Getty Center Dr" : "City Center",
-            notes: isLosAngeles
-              ? "Architecture, gardens and stunning city views"
-              : "Learn about local eco-friendly initiatives"
-          }
-        ]
+        activities:
+          cityActivities[city] && cityActivities[city][i]
+            ? cityActivities[city][i]
+            : [
+                {
+                  time: "9:00 AM",
+                  activity: "Breakfast at a local eco-friendly café",
+                  location: "Downtown",
+                  notes: "Try their organic coffee and vegan options"
+                },
+                {
+                  time: "11:00 AM",
+                  activity: "Visit the local farmers market",
+                  location: "Main Square",
+                  notes: "Great place to meet locals and buy fresh produce"
+                },
+                {
+                  time: "2:00 PM",
+                  activity: "City sustainability tour",
+                  location: "City Center",
+                  notes: "Learn about local eco-friendly initiatives"
+                }
+              ]
       })),
       recommendations: {
-        restaurants: isLosAngeles
-          ? ["Crossroads Kitchen", "Plant Food + Wine", "Gracias Madre"]
-          : ["Organic Delights", "Green Plate", "Nature's Kitchen"],
-        accommodations: isLosAngeles
-          ? ["1 Hotel West Hollywood", "Shore Hotel Santa Monica", "Cara Hotel"]
-          : ["Eco Lodge", "Green Hotel", "Sustainable Resort"],
-        transportation: isLosAngeles
-          ? [
-              "Metro Rail System",
-              "Tesla Rental Services",
-              "Waymo Autonomous Taxis",
-              "Lime/Bird Scooters"
-            ]
-          : ["Public transit", "Bike rentals", "Walking tours"]
+        restaurants: recommendations.map(place => `${place.name} – ${place.location}`),
+        accommodations: ["Eco Lodge", "Green Hotel", "Sustainable Resort"],
+        transportation: ["Public transit", "Bike rentals", "Walking tours"]
       }
     };
 
     // Add more specific activities for LA if it's a longer stay
-    if (isLosAngeles && numDays > 2) {
+    if (isSupportedCity && numDays > 2) {
       const additionalActivities = [
         {
           time: "9:30 AM",
@@ -128,7 +169,7 @@ export async function generateAIGuide(prompt: string): Promise<TravelGuide | nul
       prompt,
       content: JSON.stringify(content),
       is_premade: false,
-      description: `Personalized eco-friendly itinerary based on: “${prompt}”`
+      description: `Personalized eco-friendly itinerary based on: "${prompt}"`
     };
 
     const { data, error } = await supabase
