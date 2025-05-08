@@ -15,11 +15,6 @@ const Navigation = () => {
               Home
             </Link>
           </li>
-          <li>
-            <Link to="/vr-experiences" className="hover:text-primary transition-colors">
-              VR Experiences
-            </Link>
-          </li>
         </ul>
       </nav>
     </header>
