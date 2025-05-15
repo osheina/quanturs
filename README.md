@@ -6,10 +6,9 @@
 ## 🔗 Live Demo  
 **Web app (beta):**  
 https://quantum-eco-pathway.lovable.app  
-*(Lovable project ID: d52a3071-78d0-4a70-b544-7a777337ada6)*
 
 ## 📋 Project Overview  
-1. **800+ curated points of interest** in Los Angeles, San Diego and San Francisco:  
+1. **700+ curated points of interest** in Los Angeles, San Diego and San Francisco:  
    coffee bars, vegan restaurants, eco-hotels, hidden parks & hikes.  
 2. **Smart search & filter** by name, category, diet tags, neighborhood.  
 3. **AI-generated day-by-day guides** customized to user preferences.  
