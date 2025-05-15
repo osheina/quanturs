@@ -37,9 +37,11 @@ const Index = () => {
           {vrExperiences.slice(0, 3).map((experience, index) => (
             <VRExperienceCard
               key={index}
-              image={getImageUrl(experience.type)}
+              image={experience.image || getImageUrl(experience.type)}
               title={experience.title}
               duration={experience.duration}
+              co2_kg={experience.co2_kg}
+              co2_rating={experience.co2_rating}
             />
           ))}
         </div>

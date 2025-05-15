@@ -1,5 +1,7 @@
 
-const co2Colors: { [key: number]: string } = {
+import React from 'react';
+
+const co2Colors: Record<number, string> = {
   1: "bg-green-600",
   2: "bg-green-400",
   3: "bg-yellow-300",
@@ -8,7 +10,7 @@ const co2Colors: { [key: number]: string } = {
   6: "bg-gray-700"
 };
 
-const co2Labels: { [key: number]: string } = {
+const co2Labels: Record<number, string> = {
   1: "Ultra low",
   2: "Low",
   3: "Medium",
@@ -23,20 +25,21 @@ interface Co2BadgeProps {
 }
 
 export default function Co2Badge({ co2_kg, co2_rating }: Co2BadgeProps) {
-  if (co2_kg === undefined || co2_rating === undefined) return null;
-
-  // Ensure co2_rating is a valid key for co2Colors and co2Labels
-  const ratingKey = Math.max(1, Math.min(6, Math.round(co2_rating)));
-
+  // Return null if no data or invalid rating
+  if (!co2_kg || !co2_rating || co2_rating < 1 || co2_rating > 6) return null;
+  
+  // Ensure rating is a valid number between 1-6
+  const safeRating = Math.min(Math.max(Math.round(co2_rating), 1), 6);
+  
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-700 mt-2">
+    <div className="flex items-center gap-2 text-xs text-gray-700">
       <div
-        className={`rounded-full px-2 py-1 text-white ${co2Colors[ratingKey]}`}
+        className={`rounded-full px-2 py-1 text-white ${co2Colors[safeRating] || 'bg-gray-500'}`}
         title={`~${co2_kg.toFixed(2)} kg CO₂ per visit`}
       >
-        CO₂ {ratingKey}/6
+        CO₂ {safeRating}/6
       </div>
-      <span className="text-gray-400">{co2Labels[ratingKey]}</span>
+      <span className="text-gray-400">{co2Labels[safeRating] || 'Unknown'}</span>
     </div>
   );
 }
