@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, BadgeDollarSign, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import Co2Badge from "./Co2Badge"; // Импортируем новый компонент
 
 interface RestaurantCardProps {
   image: string;
@@ -11,9 +12,11 @@ interface RestaurantCardProps {
   priceRange: string;
   description: string;
   location: string;
+  co2_kg?: number; // Добавляем опциональное поле
+  co2_rating?: number; // Добавляем опциональное поле
 }
 
-const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description, location }: RestaurantCardProps) => {
+const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description, location, co2_kg, co2_rating }: RestaurantCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative overflow-hidden">
@@ -45,6 +48,7 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description,
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600">{description}</p>
+        <Co2Badge co2_kg={co2_kg} co2_rating={co2_rating} /> {/* Используем новый компонент */}
       </CardContent>
     </Card>
   );

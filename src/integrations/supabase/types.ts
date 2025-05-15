@@ -12,6 +12,8 @@ export type Database = {
       quanturs_places: {
         Row: {
           city: string | null
+          co2_kg: number | null
+          co2_rating: number | null
           diet_tags: string | null
           id: number
           image_url: string | null
@@ -23,6 +25,8 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          co2_kg?: number | null
+          co2_rating?: number | null
           diet_tags?: string | null
           id?: number
           image_url?: string | null
@@ -34,6 +38,8 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          co2_kg?: number | null
+          co2_rating?: number | null
           diet_tags?: string | null
           id?: number
           image_url?: string | null
@@ -86,7 +92,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      compute_co2_kg: {
+        Args: { p_type: string; p_vibe: string; p_diet: string }
+        Returns: number
+      }
+      compute_co2_rating: {
+        Args: { c: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
