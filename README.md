@@ -6,7 +6,6 @@
 ## 🔗 Live Demo  
 **Web app (beta):**  
 https://quantum-eco-pathway.lovable.app  
-*(Lovable project ID: d52a3071-78d0-4a70-b544-7a777337ada6)*
 
 ## 📋 Project Overview  
 1. **800+ curated points of interest** in Los Angeles, San Diego and San Francisco:  
