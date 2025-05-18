@@ -1,4 +1,3 @@
-
 import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import AIGuideSection from '@/components/AIGuideSection';
@@ -31,30 +30,15 @@ const Index = () => {
       <MainContent />
 
       {/* VR Experiences Section */}
-      <section className="container mx-auto py-12 px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Immersive VR Experiences</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {vrExperiences.slice(0, 3).map((experience, index) => (
-            <VRExperienceCard
-              key={index}
-              image={experience.image || getImageUrl(experience.type)}
-              title={experience.title}
-              duration={experience.duration}
-              co2_kg={experience.co2_kg}
-              co2_rating={experience.co2_rating}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Sustainability Impact Section */}
-      <section className="container mx-auto text-center py-8 mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Sustainability Impact</h2>
+      <section className="container mx-auto py-12 px-4 text-center">
+        <h2 className="text-3xl font-bold mb-4">Immersive VR Experiences</h2>
         <p className="text-gray-600 text-lg">
-          CO₂-Footprint Estimator —{' '}
-          <span className="text-green-500 font-bold">Coming Soon</span> 🌱
+          Interactive Previews —{' '}
+          <span className="text-green-500 font-bold">Coming Soon</span> ✨
         </p>
       </section>
+
+      {/* Sustainability Impact Section has been removed */}
 
       <TestimonialsSection />
     </div>
