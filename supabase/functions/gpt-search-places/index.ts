@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // Using the generally recommended import for supabase-js v2 in Deno
@@ -41,10 +40,13 @@ serve(async (req) => {
 The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
 This search functionality ONLY supports English queries.
 If the user's query is **not in English**, return an empty JSON array: [].
-If the query **is in English**, generate a concise array of 2 to 4 specific and effective English search keywords. These keywords will be used with OR logic within each keyword search against multiple fields, and AND logic between keywords.
-For example (English query -> English keywords):
+If the query **is in English**, generate a concise array of 2 to 4 specific and effective English search keywords.
+The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings, instead of the exact query terms, to maximize relevant matches.**
+For example:
 - Input: 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
 - Input: 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
+- Input: 'cheap healthy eats', keywords might be ['affordable', 'healthy', 'food'] (preferring 'affordable' if 'cheap' is less common, and 'food' if 'eats' is too colloquial).
+- Input: 'restarant with nice view', keywords might be ['restaurant', 'view', 'scenic'] (correcting misspelling and adding related term).
 Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] or [] if not in English.`;
 
     console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
@@ -152,4 +154,3 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     });
   }
 });
-
