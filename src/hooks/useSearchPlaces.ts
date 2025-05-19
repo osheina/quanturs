@@ -6,49 +6,49 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
   const { data: results, isLoading, error } = useQuery({
     queryKey: ["places", searchTerms],
     queryFn: async () => {
-      if (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0)) {
+      if (!searchTerms) {
         return [];
       }
-      
-      // Start with the base query builder
+
       let queryBuilder = supabase
         .from("quanturs_places")
         .select("*");
-      
-      if (Array.isArray(searchTerms) && searchTerms.length > 0) {
-        // For array of search terms, we'll process them correctly
+
+      if (Array.isArray(searchTerms)) {
         const cleanedTokens = searchTerms
           .map(token => String(token || "").trim())
           .filter(token => token !== "");
-          
+
         if (cleanedTokens.length === 0) {
-          return [];
+          return []; // Нет валидных токенов для поиска
         }
-        
-        // Apply filters correctly for each search term (AND logic between terms)
-        cleanedTokens.forEach(token => {
-          // Use proper PostgreSQL syntax for OR conditions within ilike filters
+
+        // Каждый токен должен соответствовать одному из полей (логика ИЛИ для каждого токена)
+        // Все условия для токенов должны быть выполнены (логика И между токенами)
+        const perTokenOrConditions = cleanedTokens.map(token => {
           const searchPattern = `%${token}%`;
-          queryBuilder = queryBuilder
-            .or(`name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`);
+          return `or(name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern})`;
         });
         
-        console.log("Search query with token groups (AND logic):", cleanedTokens);
+        // Объединяем условия для каждого токена с помощью AND
+        queryBuilder = queryBuilder.and(perTokenOrConditions.join(','));
         
+        console.log("Search query (array of tokens - AND logic):", perTokenOrConditions.join(','));
+
       } else if (typeof searchTerms === 'string' && searchTerms.trim().length > 0) {
         const cleanedSearchTerm = searchTerms.trim();
-        // Legacy support for single string search, apply OR across fields for this single string
+        // Для одной строки применяем ИЛИ по полям
         const searchPattern = `%${cleanedSearchTerm}%`;
         queryBuilder = queryBuilder
           .or(`name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`);
         
-        console.log("Search query with single string (OR logic):", cleanedSearchTerm);
+        console.log("Search query (single string - OR logic):", cleanedSearchTerm);
       } else {
-        // If searchTerms is an empty string or invalid, return empty
+        // Если searchTerms - пустая строка (после Array.isArray) или невалидный тип
         return [];
       }
       
-      // Apply limit at the end and then execute the query
+      // Применяем лимит и выполняем запрос
       const { data, error: queryError } = await queryBuilder.limit(50);
       
       if (queryError) {
@@ -59,8 +59,11 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
       console.log("Search results:", data?.length || 0, "items found");
       return data || [];
     },
-    enabled: !!searchTerms && (typeof searchTerms === 'string' ? searchTerms.trim().length > 0 : searchTerms.filter(t => String(t || "").trim() !== "").length > 0),
-    staleTime: 1000 * 60 * 5, // Cache results for 5 minutes
+    enabled: !!searchTerms && (
+      (typeof searchTerms === 'string' && searchTerms.trim().length > 0) ||
+      (Array.isArray(searchTerms) && searchTerms.filter(t => String(t || "").trim() !== "").length > 0)
+    ),
+    staleTime: 1000 * 60 * 5, // Кешировать результаты на 5 минут
   });
 
   return { results, isLoading, error };
