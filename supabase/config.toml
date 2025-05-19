@@ -1,1 +1,20 @@
-project_id = "pciobrhrmhpqmthixvcb"
+
+# The SvelteKit Supabase client requires these to be set to ""
+# auth.email.template.confirmation = ""
+# auth.email.template.email_change = ""
+# auth.email.template.password_reset = ""
+# auth.email.template.magic_link = ""
+# auth.email.template.reauthentication = ""
+# auth.email.template. MFA = ""
+
+# This is where you can declare your Edge Functions.
+# Each function is mapped to a path, relative to the `supabase/functions` directory.
+# For example, `hello-world = { path = "hello-world" }` will map to `supabase/functions/hello-world/index.ts`.
+
+[functions.gpt-search-places]
+  verify_jwt = false # For now, allow unauthenticated access for testing. Change if needed.
+
+# [functions.another-function]
+#   verify_jwt = true
+#   [functions.another-function.secrets]
+#   SECRET_NAME = "env_var_name" # Set the secret value in Project Settings > Functions > Secrets

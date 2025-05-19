@@ -2,66 +2,40 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useSearchPlaces = (searchTerms: string[] | string) => {
+// The argument will now be the raw debounced search string
+export const useSearchPlaces = (debouncedSearchTerm: string) => {
   const { data: results, isLoading, error } = useQuery({
-    queryKey: ["places", searchTerms],
+    queryKey: ["places", "gpt-search", debouncedSearchTerm], // Changed queryKey
     queryFn: async () => {
-      if (!searchTerms) {
+      if (!debouncedSearchTerm || debouncedSearchTerm.trim().length === 0) {
+        console.log("useSearchPlaces: debouncedSearchTerm is empty, returning empty array.");
         return [];
       }
 
-      let queryBuilder = supabase
-        .from("quanturs_places")
-        .select("*");
+      console.log("useSearchPlaces: Calling gpt-search-places with query:", debouncedSearchTerm);
+      const { data, error: functionError } = await supabase.functions.invoke(
+        "gpt-search-places",
+        { body: { query: debouncedSearchTerm } }
+      );
 
-      if (Array.isArray(searchTerms)) {
-        const cleanedTokens = searchTerms
-          .map(token => String(token || "").trim())
-          .filter(token => token !== "");
-
-        if (cleanedTokens.length === 0) {
-          return []; // Нет валидных токенов для поиска
-        }
-
-        // Apply filters for each token separately (AND logic)
-        for (const token of cleanedTokens) {
-          const searchPattern = `%${token}%`;
-          // This creates an OR group for each token's conditions
-          queryBuilder = queryBuilder.or(
-            `name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`
-          );
-        }
-        
-        console.log("Search query (array of tokens - AND logic using chained filters):", cleanedTokens);
-
-      } else if (typeof searchTerms === 'string' && searchTerms.trim().length > 0) {
-        const cleanedSearchTerm = searchTerms.trim();
-        // Для одной строки применяем ИЛИ по полям
-        const searchPattern = `%${cleanedSearchTerm}%`;
-        queryBuilder = queryBuilder
-          .or(`name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`);
-        
-        console.log("Search query (single string - OR logic):", cleanedSearchTerm);
-      } else {
-        // Если searchTerms - пустая строка (после Array.isArray) или невалидный тип
-        return [];
+      if (functionError) {
+        console.error("useSearchPlaces: Error invoking gpt-search-places:", functionError);
+        throw functionError;
       }
       
-      // Применяем лимит и выполняем запрос
-      const { data, error: queryError } = await queryBuilder.limit(50);
-      
-      if (queryError) {
-        console.error("Supabase search error:", queryError);
-        throw queryError;
+      console.log("useSearchPlaces: Received data from gpt-search-places:", data);
+      // The function should return an array of places or an object with an error property
+      if (data && Array.isArray(data)) {
+        return data;
+      } else if (data && data.error) {
+         console.error("useSearchPlaces: Error from gpt-search-places function:", data.error);
+         throw new Error(data.error);
       }
       
-      console.log("Search results:", data?.length || 0, "items found");
-      return data || [];
+      return []; // Fallback if data is not in expected format
     },
-    enabled: !!searchTerms && (
-      (typeof searchTerms === 'string' && searchTerms.trim().length > 0) ||
-      (Array.isArray(searchTerms) && searchTerms.filter(t => String(t || "").trim() !== "").length > 0)
-    ),
+    // Enable the query only if debouncedSearchTerm is a non-empty string
+    enabled: typeof debouncedSearchTerm === 'string' && debouncedSearchTerm.trim().length > 0,
     staleTime: 1000 * 60 * 5, // Кешировать результаты на 5 минут
   });
 

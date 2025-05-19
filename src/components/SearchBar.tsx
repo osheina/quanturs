@@ -18,16 +18,13 @@ const SearchBar = () => {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  const tokens = debounced
-    .split(/\s+/)
-    .filter(t => t.length >= 2)
-    .slice(0, 5);
-
-  const { results, isLoading, error } = useSearchPlaces(tokens);
+  // Now useSearchPlaces will take the debounced string directly
+  const { results, isLoading, error } = useSearchPlaces(debounced);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setDebounced(searchTerm.trim());
+    // setDebounced is already handled by useEffect, but this ensures instant trigger if needed
+    setDebounced(searchTerm.trim()); 
     inputRef.current?.blur();
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,7 +37,8 @@ const SearchBar = () => {
   };
 
   const showNoHits = debounced && !isLoading && (!results || results.length === 0);
-  const showTooMany = tokens.length >= 3 && showNoHits;
+  // Removed showTooMany logic as GPT will handle keyword relevance
+  // const showTooMany = tokens.length >= 3 && showNoHits; 
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -71,6 +69,7 @@ const SearchBar = () => {
           className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin rounded-xl backdrop-blur-sm bg-black/20"
         >
           {isLoading ? (
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="space-y-4">
@@ -91,20 +90,22 @@ const SearchBar = () => {
                     key={p.id}
                     image={p.image_url}
                     name={p.name ?? ""}
-                    cuisine={p.type}
-                    rating={4.5}
-                    priceRange="$$$"
+                    cuisine={p.type} // Assuming type is cuisine-like
+                    rating={4.5} // Placeholder, as rating is not in quanturs_places
+                    priceRange="$$$" // Placeholder
                     description={p.notes ?? ""}
                     location={p.location ?? ""}
+                    // You can add co2_kg and co2_rating here if RestaurantCard supports it
                   />
                 ))}
               </div>
             </>
           ) : (
             <div className="text-center py-12 text-gray-200">
-              {showTooMany
+              {/* {showTooMany
                 ? "No matches — try fewer keywords"
-                : "No matches found"}
+                : "No matches found"} */}
+              No matches found
               {error && <p className="mt-2 text-red-400 text-sm">{error.message}</p>}
             </div>
           )}
