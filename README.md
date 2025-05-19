@@ -1,7 +1,3 @@
-<!-- Badges -->
-![CI](https://github.com/<your-org>/quanturs/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/github/license/<your-org>/quanturs.svg)
-
 # Quanturs 🌱✈️  
 AI-powered travel recommendations with **built-in CO₂ scoring**
 
