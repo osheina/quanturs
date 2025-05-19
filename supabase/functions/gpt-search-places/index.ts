@@ -1,8 +1,7 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// Attempting with version 2.43.4 of supabase-js
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
+// Using the generally recommended import for supabase-js v2 in Deno
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import type { Database } from "../_shared/database.types.ts";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -114,7 +113,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
       });
     }
     
-    // Query Supabase with these keywords
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
     let queryBuilder = supabase.from("quanturs_places").select("*");
 
@@ -173,4 +171,3 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     });
   }
 });
-
