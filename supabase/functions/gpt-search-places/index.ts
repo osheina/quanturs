@@ -1,7 +1,7 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Updated import to a specific version of supabase-js
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import type { Database } from "../_shared/database.types.ts";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -36,7 +36,6 @@ serve(async (req) => {
       });
     }
 
-    // 1. Use GPT-4 to get refined keywords (English only)
     const gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
 The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
 This search functionality ONLY supports English queries.
@@ -76,18 +75,14 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     if (gptData.choices && gptData.choices[0] && gptData.choices[0].message && gptData.choices[0].message.content) {
       try {
         const rawContent = gptData.choices[0].message.content.trim();
-        // GPT should return "[]" for non-English queries as per the prompt.
         keywords = JSON.parse(rawContent);
         if (!Array.isArray(keywords) || !keywords.every(kw => typeof kw === 'string')) {
           console.warn("gpt-search-places: GPT returned non-array or non-string array, using original query as keyword fallback (if English-like):", rawContent);
-          // Fallback for English-like queries if parsing fails or unexpected format.
-          // For strictly English-only, if GPT doesn't return [], this fallback might still process non-English.
-          // However, the prompt is explicit about returning [].
           const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
           if (isLikelyEnglish) {
              keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
           } else {
-             keywords = []; // Ensure non-English queries that didn't get "[]" from GPT still result in no keywords
+             keywords = []; 
           }
         }
       } catch (e) {
@@ -117,9 +112,9 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
+    
     // 2. Query Supabase with these keywords
-    const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!); // Added non-null assertion as they are checked above
     let queryBuilder = supabase.from("quanturs_places").select("*");
 
     const cleanedTokens = keywords
@@ -152,7 +147,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
 
     if (tokenOrFilterStrings.length > 0) {
       const finalFilter = tokenOrFilterStrings.join(',');
-      queryBuilder = queryBuilder.and(finalFilter);
+      queryBuilder = queryBuilder.and(finalFilter); // This is the line that previously caused "is not a function"
       console.log("gpt-search-places: Applying AND filter between keyword groups:", finalFilter);
     }
     
@@ -177,4 +172,3 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     });
   }
 });
-
