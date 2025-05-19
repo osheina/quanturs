@@ -37,18 +37,28 @@ serve(async (req) => {
       });
     }
 
-    const gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
+    // Updated prompt logic
+    let gptPrompt = "";
+    const lowerCaseQuery = query.trim().toLowerCase();
+
+    if (lowerCaseQuery === "healthy") {
+      gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
+The database has places with 'diet_tags' that can include "vegan", "keto", "organic".
+The user's query is "healthy". Your goal is to help them find places with relevant dietary tags.
+Generate a JSON array containing *one* of the following specific keyword arrays: ["vegan"], ["keto"], or ["organic"]. Choose the one most likely to yield results or cycle through them if this function were called repeatedly (but for a single call, pick one).
+Example: ["vegan"] or ["keto"]. Return ONLY the JSON array.`;
+    } else {
+      gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
 The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
 This search functionality ONLY supports English queries.
 If the user's query is **not in English**, return an empty JSON array: [].
-If the query **is in English**, generate a concise array of 2 to 4 specific and effective English search keywords.
-The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings. For example, if the user searches for 'healthy', consider including keywords like 'vegan', 'keto', 'organic' if they are relevant for finding healthy options. This is to maximize relevant matches.**
+If the query **is in English** (and not just "healthy" which is handled by a different logic), generate a concise array of 2 to 4 specific and effective English search keywords.
+The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings. For example, if a part of the query is 'healthy food spot', keywords might be ['healthy', 'food', 'restaurant', 'vegan options'].**
 For example:
 - Input: 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
 - Input: 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
-- Input: 'cheap healthy eats', keywords might be ['affordable', 'healthy', 'food'] (preferring 'affordable' if 'cheap' is less common, and 'food' if 'eats' is too colloquial).
-- Input: 'restarant with nice view', keywords might be ['restaurant', 'view', 'scenic'] (correcting misspelling and adding related term).
 Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] or [] if not in English.`;
+    }
 
     console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
 
@@ -79,39 +89,57 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     if (gptData.choices && gptData.choices[0] && gptData.choices[0].message && gptData.choices[0].message.content) {
       try {
         const rawContent = gptData.choices[0].message.content.trim();
-        keywords = JSON.parse(rawContent);
-        if (!Array.isArray(keywords) || !keywords.every(kw => typeof kw === 'string')) {
-          console.warn("gpt-search-places: GPT returned non-array or non-string array, using original query as keyword fallback (if English-like):", rawContent);
-          const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
-          if (isLikelyEnglish) {
-             keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
-          } else {
-             keywords = [];
-          }
+        // Ensure it's valid JSON and an array of strings
+        const parsedContent = JSON.parse(rawContent);
+        if (Array.isArray(parsedContent) && parsedContent.every(kw => typeof kw === 'string')) {
+            keywords = parsedContent;
+        } else {
+            console.warn("gpt-search-places: GPT returned non-array or non-string array. Raw:", rawContent);
+            // Fallback for non-healthy query if parsing failed for some reason
+            if (lowerCaseQuery !== "healthy") {
+                const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
+                if (isLikelyEnglish) {
+                    keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+                } else {
+                    keywords = [];
+                }
+            } else {
+                keywords = []; // For "healthy" query, if parsing fails, return no keywords to avoid issues
+            }
         }
       } catch (e) {
-        console.warn("gpt-search-places: Failed to parse GPT keywords, using original query as keyword fallback (if English-like):", e.message, "Raw content:", gptData.choices[0].message.content);
-        const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
-        if (isLikelyEnglish) {
-           keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+        console.warn("gpt-search-places: Failed to parse GPT keywords. Error:", e.message, "Raw content:", gptData.choices[0].message.content);
+         // Fallback for non-healthy query
+        if (lowerCaseQuery !== "healthy") {
+            const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
+            if (isLikelyEnglish) {
+               keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+            } else {
+               keywords = [];
+            }
         } else {
-           keywords = [];
+            keywords = []; // For "healthy" query, if parsing fails, return no keywords
         }
       }
     } else {
-       console.warn("gpt-search-places: No content in GPT response, using original query as keyword fallback (if English-like).");
-       const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
-       if (isLikelyEnglish) {
-          keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+       console.warn("gpt-search-places: No content in GPT response.");
+        // Fallback for non-healthy query
+       if (lowerCaseQuery !== "healthy") {
+           const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
+           if (isLikelyEnglish) {
+              keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+           } else {
+              keywords = [];
+           }
        } else {
-          keywords = [];
+           keywords = []; // For "healthy" query, if no content, return no keywords
        }
     }
     
     console.log("gpt-search-places: Refined keywords from GPT:", keywords);
 
     if (keywords.length === 0) {
-      console.log("gpt-search-places: No keywords generated (either non-English query or query too short/irrelevant), returning empty results.");
+      console.log("gpt-search-places: No keywords generated, returning empty results.");
       return new Response(JSON.stringify([]), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -119,12 +147,12 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
     
-    const cleanedTokens = keywords
-      .map(token => String(token || "").trim().toLowerCase()) 
-      .filter(token => token !== "" && token.length >= 1);
+    // Cleaned tokens are already handled by GPT generating an array of strings.
+    // Ensure they are lowercase just in case.
+    const cleanedTokens = keywords.map(token => String(token || "").trim().toLowerCase()).filter(token => token !== "");
 
     if (cleanedTokens.length === 0) {
-      console.log("gpt-search-places: No valid cleaned tokens, returning empty results.");
+      console.log("gpt-search-places: No valid cleaned tokens after final processing, returning empty results.");
       return new Response(JSON.stringify([]), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
