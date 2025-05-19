@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // Using the generally recommended import for supabase-js v2 in Deno
@@ -114,8 +115,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     }
     
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
-    let queryBuilder = supabase.from("quanturs_places").select("*");
-
+    
     const cleanedTokens = keywords
       .map(token => String(token || "").trim().toLowerCase()) 
       .filter(token => token !== "" && token.length >= 1);
@@ -127,37 +127,18 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
       });
     }
     
-    const tokenOrFilterStrings: string[] = [];
-    for (const token of cleanedTokens) {
-        const sanitizedTokenForPattern = token.replace(/[,()'%]/g, ''); 
-        const searchPatternSafe = `%${sanitizedTokenForPattern}%`;
-
-        const individualFieldFilters = [
-            `name.ilike.${searchPatternSafe}`,
-            `type.ilike.${searchPatternSafe}`,
-            `location.ilike.${searchPatternSafe}`,
-            `city.ilike.${searchPatternSafe}`,
-            `diet_tags.ilike.${searchPatternSafe}`,
-            `vibe.ilike.${searchPatternSafe}`,
-            `notes.ilike.${searchPatternSafe}`
-        ];
-        tokenOrFilterStrings.push(`or(${individualFieldFilters.join(',')})`);
-    }
-
-    if (tokenOrFilterStrings.length > 0) {
-      const finalFilter = tokenOrFilterStrings.join(',');
-      queryBuilder = queryBuilder.and(finalFilter); 
-      console.log("gpt-search-places: Applying AND filter between keyword groups:", finalFilter);
-    }
-    
-    const { data: places, error: dbError } = await queryBuilder.limit(50);
+    console.log("gpt-search-places: Calling RPC search_places_by_keywords with tokens:", cleanedTokens);
+    const { data: places, error: dbError } = await supabase.rpc(
+      "search_places_by_keywords",
+      { search_keywords: cleanedTokens }
+    );
 
     if (dbError) {
-      console.error("gpt-search-places: Supabase query error:", dbError);
+      console.error("gpt-search-places: Supabase RPC error:", dbError);
       throw dbError;
     }
     
-    console.log("gpt-search-places: Found places:", places?.length || 0);
+    console.log("gpt-search-places: Found places via RPC:", places?.length || 0);
 
     return new Response(JSON.stringify(places || []), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -171,3 +152,4 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     });
   }
 });
+

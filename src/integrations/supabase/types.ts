@@ -100,6 +100,22 @@ export type Database = {
         Args: { c: number }
         Returns: number
       }
+      search_places_by_keywords: {
+        Args: { search_keywords: string[] }
+        Returns: {
+          city: string | null
+          co2_kg: number | null
+          co2_rating: number | null
+          diet_tags: string | null
+          id: number
+          image_url: string | null
+          location: string | null
+          name: string | null
+          notes: string | null
+          type: string
+          vibe: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
