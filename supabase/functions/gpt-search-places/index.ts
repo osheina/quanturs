@@ -1,7 +1,8 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// Updated import to a specific version of supabase-js
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+// Attempting with version 2.43.4 of supabase-js
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
 import type { Database } from "../_shared/database.types.ts";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -113,8 +114,8 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
       });
     }
     
-    // 2. Query Supabase with these keywords
-    const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!); // Added non-null assertion as they are checked above
+    // Query Supabase with these keywords
+    const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
     let queryBuilder = supabase.from("quanturs_places").select("*");
 
     const cleanedTokens = keywords
@@ -147,7 +148,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
 
     if (tokenOrFilterStrings.length > 0) {
       const finalFilter = tokenOrFilterStrings.join(',');
-      queryBuilder = queryBuilder.and(finalFilter); // This is the line that previously caused "is not a function"
+      queryBuilder = queryBuilder.and(finalFilter); 
       console.log("gpt-search-places: Applying AND filter between keyword groups:", finalFilter);
     }
     
@@ -172,3 +173,4 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     });
   }
 });
+
