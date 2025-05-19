@@ -23,17 +23,14 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
           return []; // Нет валидных токенов для поиска
         }
 
-        // Каждый токен должен соответствовать одному из полей (логика ИЛИ для каждого токена)
-        // Все условия для токенов должны быть выполнены (логика И между токенами)
-        const perTokenOrConditions = cleanedTokens.map(token => {
+        // Apply an OR filter group for each token, and chain them (implicit AND)
+        cleanedTokens.forEach(token => {
           const searchPattern = `%${token}%`;
-          return `or(name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern})`;
+          const orFilterForToken = `or(name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern})`;
+          queryBuilder = queryBuilder.filter(orFilterForToken);
         });
         
-        // Объединяем условия для каждого токена с помощью AND
-        queryBuilder = queryBuilder.and(perTokenOrConditions.join(','));
-        
-        console.log("Search query (array of tokens - AND logic):", perTokenOrConditions.join(','));
+        console.log("Search query (array of tokens - AND logic using chained filters):", cleanedTokens);
 
       } else if (typeof searchTerms === 'string' && searchTerms.trim().length > 0) {
         const cleanedSearchTerm = searchTerms.trim();
@@ -68,3 +65,4 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
 
   return { results, isLoading, error };
 };
+
