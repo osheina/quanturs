@@ -1,40 +1,54 @@
- # Quanturs — AI-Powered Sustainable Travel Guides  
-**Personalized, eco-friendly itineraries that blend data science, local expertise and green choices.**
+<!-- Badges -->
+![CI](https://github.com/<your-org>/quanturs/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/github/license/<your-org>/quanturs.svg)
+
+# Quanturs 🌱✈️  
+AI-powered travel recommendations with **built-in CO₂ scoring**
+
+> “Quanturs shows how AI can nudge travellers toward low-carbon choices…” — *AI Time Journal* (2025)
+
+<p align="center">
+  <img src="docs/quanturs-guide-demo.gif" width="720" alt="Quanturs guide demo" />
+</p>
 
 ---
 
-## 🔗 Live Demo  
-**Web app (beta):**  
-https://quantum-eco-pathway.lovable.app  
+## ✨ Features
+- **700 + curated POIs** (LA, San Diego, SF)
+- **Smart search & filter** by name, category, diet tags, neighborhood.  
+- **AI-generated day-by-day guides** customized to user preferences.  
+- GPT-4 day-by-day guides tailored to user lifestyle
+- **Real-time CO₂ micro-service** (badge 1-6 on each item)
+- Roadmap: hybrid recommender • VR previews • new cities
 
-## 📋 Project Overview  
-1. **700+ curated points of interest** in Los Angeles, San Diego and San Francisco:  
-   coffee bars, vegan restaurants, eco-hotels, hidden parks & hikes.  
-2. **Smart search & filter** by name, category, diet tags, neighborhood.  
-3. **AI-generated day-by-day guides** customized to user preferences.  
-4. **Press & Awards** instead of placeholders:  
-   - “Quanturs shows how AI can nudge travelers toward low-carbon choices…” — *AI Time Journal, 2025*  
-   - Winner — Best Business Product, All-Russia Hackathon “Best IT Solutions for Business”, 2025  
-5. **Roadmap (Q3–Q4 2025)**:  
-   - Hybrid recommendation engine (collaborative + content + reinforcement learning)  
-   - In-app CO₂-footprint estimator  
-   - Immersive VR previews of top locations  
-   - Expansion to Chicago, New York City & beyond  
+## 🔥 Live Demo
+https://quantum-eco-pathway.lovable.app  — no login required
 
 ---
 
-## 👩‍💻 How to Review & Get Started  
-1. **Open the live demo** in your browser (no login required).  
-2. **Explore the Search bar**: try “vegan brunch LA”, “eco hotel Malibu” or any keyword.  
-3. **Scroll to “Eco Stays” tab** to see real eco-hotels with LEED-style badges.  
-4. **Click “Create Guide”** to generate a sample personalized itinerary.  
-5. **Press & Awards** section shows verified recognition.
+## 🛠️ Tech Stack
+| Layer        | Tech                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| Front-end    | Vite + React 18 + TypeScript + Tailwind + shadcn-ui                |
+| API / Auth   | Supabase (PostgreSQL + RLS)                                        |
+| AI Engine    | OpenAI GPT-4 (itinerary & copy correction)                         |
+| **CO₂ svc**  | FastAPI micro-service (≤50 ms calc)                                |
+| Maps         | React-Leaflet + OpenStreetMap                                      |
+| DevOps       | Docker Compose • GitHub Actions • Prettier / ESLint                |
 
 ---
 
-## 🛠️ Tech Stack  
-- **Frontend:** Vite + TypeScript + React + shadcn-ui + Tailwind CSS  
-- **State & Data:** Supabase (PostgreSQL + RLS policies)  
-- **AI & Backend**: OpenAI (gpt-4) for text correction & guide generation
-- **Mapping:** React-Leaflet (OpenStreetMap) for PoI previews  
----
+## 🖼️ Architecture
+
+```mermaid
+graph TD
+  subgraph Client
+    A[React UI]
+  end
+  subgraph Backend
+    B[Supabase (GraphQL)]
+    C[CO₂ svc<br/>FastAPI (Docker)]
+  end
+  A -- GraphQL --> B
+  B -- Postgres --> D[(DB)]
+  A -- REST / ws --> C
