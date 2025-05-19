@@ -23,12 +23,14 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
           return []; // Нет валидных токенов для поиска
         }
 
-        // Apply an OR filter group for each token, and chain them (implicit AND)
-        cleanedTokens.forEach(token => {
+        // Apply filters for each token separately (AND logic)
+        for (const token of cleanedTokens) {
           const searchPattern = `%${token}%`;
-          const orFilterForToken = `or(name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern})`;
-          queryBuilder = queryBuilder.filter(orFilterForToken);
-        });
+          // This creates an OR group for each token's conditions
+          queryBuilder = queryBuilder.or(
+            `name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`
+          );
+        }
         
         console.log("Search query (array of tokens - AND logic using chained filters):", cleanedTokens);
 
@@ -65,4 +67,3 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
 
   return { results, isLoading, error };
 };
-
