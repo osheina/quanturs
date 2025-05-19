@@ -38,12 +38,15 @@ serve(async (req) => {
 
     // 1. Use GPT-4 to get refined keywords
     const gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
-The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes.
-Based on the user's input, generate a concise array of 2 to 4 specific and effective search keywords. These keywords will be used with OR logic within each keyword search against multiple fields, and AND logic between keywords.
-For example:
-- Input 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
-- Input 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
-- Input 'dog friendly parks downtown', keywords could be ['park', 'downtown', 'pet-friendly'].
+The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
+If the user's query is not in English, first understand its core meaning and intent. Then, generate a concise array of 2 to 4 specific and effective **English** search keywords based on that meaning. These keywords will be used with OR logic within each keyword search against multiple fields, and AND logic between keywords.
+If the query is already in English, proceed directly to generate English keywords.
+For example (query -> English keywords):
+- Input (English): 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
+- Input (English): 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
+- Input (Spanish): 'restaurantes baratos Madrid', keywords could be ['cheap', 'restaurant', 'Madrid'].
+- Input (French): 'hôtel écologique près de la plage Nice', keywords could be ['eco-friendly', 'hotel', 'beach', 'Nice'].
+- Input (Russian): 'недорогие вегетарианские кафе Москва', keywords could be ['cheap', 'vegetarian', 'cafe', 'Moscow'].
 Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`;
 
     console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
@@ -58,7 +61,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: gptPrompt }],
         temperature: 0.2,
-        max_tokens: 50,
+        max_tokens: 60, // Increased slightly for potentially longer keywords or complex parsing
       }),
     });
 
@@ -74,18 +77,20 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     let keywords: string[] = [];
     if (gptData.choices && gptData.choices[0] && gptData.choices[0].message && gptData.choices[0].message.content) {
       try {
-        keywords = JSON.parse(gptData.choices[0].message.content.trim());
+        // Attempt to parse the content, trim whitespace and newlines that might break JSON.parse
+        const rawContent = gptData.choices[0].message.content.trim();
+        keywords = JSON.parse(rawContent);
         if (!Array.isArray(keywords) || !keywords.every(kw => typeof kw === 'string')) {
-          console.warn("gpt-search-places: GPT returned non-array or non-string array, using original query as keyword:", gptData.choices[0].message.content);
-          keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
+          console.warn("gpt-search-places: GPT returned non-array or non-string array, using original query as keyword fallback:", rawContent);
+          keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
         }
       } catch (e) {
-        console.warn("gpt-search-places: Failed to parse GPT keywords, using original query as keyword:", e.message);
-        keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
+        console.warn("gpt-search-places: Failed to parse GPT keywords, using original query as keyword fallback:", e.message, "Raw content:", gptData.choices[0].message.content);
+        keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
       }
     } else {
-       console.warn("gpt-search-places: No content in GPT response, using original query as keyword.");
-       keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
+       console.warn("gpt-search-places: No content in GPT response, using original query as keyword fallback.");
+       keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
     }
     
     console.log("gpt-search-places: Refined keywords from GPT:", keywords);
@@ -102,8 +107,8 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     let queryBuilder = supabase.from("quanturs_places").select("*");
 
     const cleanedTokens = keywords
-      .map(token => String(token || "").trim().toLowerCase()) // Added toLowerCase
-      .filter(token => token !== "" && token.length >= 1); // Min length 1
+      .map(token => String(token || "").trim().toLowerCase()) 
+      .filter(token => token !== "" && token.length >= 1);
 
     if (cleanedTokens.length === 0) {
       console.log("gpt-search-places: No valid cleaned tokens, returning empty results.");
@@ -114,7 +119,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     
     const tokenOrFilterStrings: string[] = [];
     for (const token of cleanedTokens) {
-        // Basic sanitization for pattern to avoid issues with special chars in token
         const sanitizedTokenForPattern = token.replace(/[,()'%]/g, ''); 
         const searchPatternSafe = `%${sanitizedTokenForPattern}%`;
 
@@ -122,7 +126,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
             `name.ilike.${searchPatternSafe}`,
             `type.ilike.${searchPatternSafe}`,
             `location.ilike.${searchPatternSafe}`,
-            `city.ilike.${searchPatternSafe}`, // Added city field
+            `city.ilike.${searchPatternSafe}`,
             `diet_tags.ilike.${searchPatternSafe}`,
             `vibe.ilike.${searchPatternSafe}`,
             `notes.ilike.${searchPatternSafe}`
@@ -131,9 +135,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     }
 
     if (tokenOrFilterStrings.length > 0) {
-      // Joins multiple 'or(...)' strings with a comma.
-      // Example: "or(filterA,filterB),or(filterC,filterD)"
-      // This translates to (filterA OR filterB) AND (filterC OR filterD)
       const finalFilter = tokenOrFilterStrings.join(',');
       queryBuilder = queryBuilder.and(finalFilter);
       console.log("gpt-search-places: Applying AND filter between keyword groups:", finalFilter);
@@ -160,4 +161,3 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     });
   }
 });
-
