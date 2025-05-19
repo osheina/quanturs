@@ -38,7 +38,7 @@ serve(async (req) => {
 
     // 1. Use GPT-4 to get refined keywords
     const gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
-The database has places with 'name', 'type', 'location', 'diet_tags', and 'vibe' attributes.
+The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes.
 Based on the user's input, generate a concise array of 2 to 4 specific and effective search keywords. These keywords will be used with OR logic within each keyword search against multiple fields, and AND logic between keywords.
 For example:
 - Input 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
@@ -77,15 +77,15 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
         keywords = JSON.parse(gptData.choices[0].message.content.trim());
         if (!Array.isArray(keywords) || !keywords.every(kw => typeof kw === 'string')) {
           console.warn("gpt-search-places: GPT returned non-array or non-string array, using original query as keyword:", gptData.choices[0].message.content);
-          keywords = query.split(/\s+/).filter(t => t.length >= 2).slice(0,5); // Fallback
+          keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
         }
       } catch (e) {
         console.warn("gpt-search-places: Failed to parse GPT keywords, using original query as keyword:", e.message);
-        keywords = query.split(/\s+/).filter(t => t.length >= 2).slice(0,5); // Fallback
+        keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
       }
     } else {
        console.warn("gpt-search-places: No content in GPT response, using original query as keyword.");
-       keywords = query.split(/\s+/).filter(t => t.length >= 2).slice(0,5); // Fallback
+       keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5); // Fallback, min length 1
     }
     
     console.log("gpt-search-places: Refined keywords from GPT:", keywords);
@@ -102,29 +102,41 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     let queryBuilder = supabase.from("quanturs_places").select("*");
 
     const cleanedTokens = keywords
-      .map(token => String(token || "").trim())
-      .filter(token => token !== "");
+      .map(token => String(token || "").trim().toLowerCase()) // Added toLowerCase
+      .filter(token => token !== "" && token.length >= 1); // Min length 1
 
     if (cleanedTokens.length === 0) {
+      console.log("gpt-search-places: No valid cleaned tokens, returning empty results.");
       return new Response(JSON.stringify([]), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     
-    // This creates an AND logic between different keyword-based filter groups.
-    // Each group (for each keyword) searches the keyword across multiple fields using OR.
-    // Example: (name~kw1 OR type~kw1 OR ...) AND (name~kw2 OR type~kw2 OR ...)
+    const tokenOrFilterStrings: string[] = [];
     for (const token of cleanedTokens) {
-        const searchPattern = `%${token}%`;
-        const orConditions = [
-            `name.ilike.${searchPattern}`,
-            `type.ilike.${searchPattern}`,
-            `location.ilike.${searchPattern}`,
-            `diet_tags.ilike.${searchPattern}`,
-            `vibe.ilike.${searchPattern}`,
-            `notes.ilike.${searchPattern}` // Added notes for broader search
-        ].join(',');
-        queryBuilder = queryBuilder.or(orConditions);
+        // Basic sanitization for pattern to avoid issues with special chars in token
+        const sanitizedTokenForPattern = token.replace(/[,()'%]/g, ''); 
+        const searchPatternSafe = `%${sanitizedTokenForPattern}%`;
+
+        const individualFieldFilters = [
+            `name.ilike.${searchPatternSafe}`,
+            `type.ilike.${searchPatternSafe}`,
+            `location.ilike.${searchPatternSafe}`,
+            `city.ilike.${searchPatternSafe}`, // Added city field
+            `diet_tags.ilike.${searchPatternSafe}`,
+            `vibe.ilike.${searchPatternSafe}`,
+            `notes.ilike.${searchPatternSafe}`
+        ];
+        tokenOrFilterStrings.push(`or(${individualFieldFilters.join(',')})`);
+    }
+
+    if (tokenOrFilterStrings.length > 0) {
+      // Joins multiple 'or(...)' strings with a comma.
+      // Example: "or(filterA,filterB),or(filterC,filterD)"
+      // This translates to (filterA OR filterB) AND (filterC OR filterD)
+      const finalFilter = tokenOrFilterStrings.join(',');
+      queryBuilder = queryBuilder.and(finalFilter);
+      console.log("gpt-search-places: Applying AND filter between keyword groups:", finalFilter);
     }
     
     const { data: places, error: dbError } = await queryBuilder.limit(50);
@@ -141,10 +153,11 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"]`
     });
 
   } catch (error) {
-    console.error("gpt-search-places: Error in Edge Function:", error.message);
+    console.error("gpt-search-places: Error in Edge Function:", error.message, error.stack);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+
