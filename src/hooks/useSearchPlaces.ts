@@ -15,32 +15,48 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
         .select("*")
         .limit(50);
       
-      // Handle tokenized search
       if (Array.isArray(searchTerms) && searchTerms.length > 0) {
-        // Build a complex OR query for all tokens
-        const orConditions = searchTerms.map(token => {
-          return `name.ilike.%${token}%,type.ilike.%${token}%,location.ilike.%${token}%,diet_tags.ilike.%${token}%`
-        }).join(',');
+        // Build an AND query where each token must find a match in at least one of its OR conditions
+        const andFilterConditions = searchTerms
+          .map(token => {
+            // For each token, create an OR group for different fields
+            // Ensure token is not empty and is a string before using ilike
+            const cleanedToken = String(token || "").trim();
+            if (cleanedToken === "") return null; // Skip empty tokens
+            return `or(name.ilike.%${cleanedToken}%,type.ilike.%${cleanedToken}%,location.ilike.%${cleanedToken}%,diet_tags.ilike.%${cleanedToken}%)`;
+          })
+          .filter(condition => condition !== null) // Remove nulls from empty tokens
+          .join(','); // Joins the OR groups with AND when passed to .and()
+
+        if (andFilterConditions.length > 0) {
+          query = query.and(andFilterConditions);
+          console.log("Search query with token groups (AND logic):", andFilterConditions);
+        } else {
+          // If all tokens were empty after cleaning, return empty results
+          return [];
+        }
         
-        query = query.or(orConditions);
-        console.log("Search query with tokens:", orConditions);
-      } else if (typeof searchTerms === 'string') {
-        // Legacy support for single string search
-        query = query.or(`name.ilike.%${searchTerms}%,type.ilike.%${searchTerms}%,location.ilike.%${searchTerms}%,diet_tags.ilike.%${searchTerms}%`);
-        console.log("Search query with string:", searchTerms);
+      } else if (typeof searchTerms === 'string' && searchTerms.trim().length > 0) {
+        const cleanedSearchTerm = searchTerms.trim();
+        // Legacy support for single string search, apply OR across fields for this single string
+        query = query.or(`name.ilike.%${cleanedSearchTerm}%,type.ilike.%${cleanedSearchTerm}%,location.ilike.%${cleanedSearchTerm}%,diet_tags.ilike.%${cleanedSearchTerm}%`);
+        console.log("Search query with single string (OR logic):", cleanedSearchTerm);
+      } else {
+        // If searchTerms is an empty string or invalid, return empty
+        return [];
       }
       
-      const { data, error } = await query;
+      const { data, error: queryError } = await query;
       
-      if (error) {
-        console.error("Supabase search error:", error);
-        throw error;
+      if (queryError) {
+        console.error("Supabase search error:", queryError);
+        throw queryError;
       }
       
       console.log("Search results:", data?.length || 0, "items found");
       return data || [];
     },
-    enabled: !!searchTerms && (typeof searchTerms === 'string' ? searchTerms.length > 0 : searchTerms.length > 0),
+    enabled: !!searchTerms && (typeof searchTerms === 'string' ? searchTerms.trim().length > 0 : searchTerms.filter(t => String(t || "").trim() !== "").length > 0),
     staleTime: 1000 * 60 * 5, // Cache results for 5 minutes
   });
 
