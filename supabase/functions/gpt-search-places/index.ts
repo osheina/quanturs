@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // Using the generally recommended import for supabase-js v2 in Deno
@@ -41,7 +42,7 @@ The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'v
 This search functionality ONLY supports English queries.
 If the user's query is **not in English**, return an empty JSON array: [].
 If the query **is in English**, generate a concise array of 2 to 4 specific and effective English search keywords.
-The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings, instead of the exact query terms, to maximize relevant matches.**
+The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings. For example, if the user searches for 'healthy', consider including keywords like 'vegan', 'keto', 'organic' if they are relevant for finding healthy options. This is to maximize relevant matches.**
 For example:
 - Input: 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
 - Input: 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
@@ -85,7 +86,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
           if (isLikelyEnglish) {
              keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
           } else {
-             keywords = []; 
+             keywords = [];
           }
         }
       } catch (e) {
