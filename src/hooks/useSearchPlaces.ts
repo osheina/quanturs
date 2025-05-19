@@ -16,7 +16,7 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
         .select("*");
       
       if (Array.isArray(searchTerms) && searchTerms.length > 0) {
-        // For array of search terms, we'll use filter() with multiple conditions
+        // For array of search terms, we'll process them correctly
         const cleanedTokens = searchTerms
           .map(token => String(token || "").trim())
           .filter(token => token !== "");
@@ -25,12 +25,12 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
           return [];
         }
         
-        // Build a filter condition where each term must match at least one field
-        // We'll use .or() for each term's field matching, and chain filters for AND logic between terms
+        // Apply filters correctly for each search term (AND logic between terms)
         cleanedTokens.forEach(token => {
-          queryBuilder = queryBuilder.filter(
-            `or(name.ilike.%${token}%,type.ilike.%${token}%,location.ilike.%${token}%,diet_tags.ilike.%${token}%)`
-          );
+          // Use proper PostgreSQL syntax for OR conditions within ilike filters
+          const searchPattern = `%${token}%`;
+          queryBuilder = queryBuilder
+            .or(`name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`);
         });
         
         console.log("Search query with token groups (AND logic):", cleanedTokens);
@@ -38,9 +38,10 @@ export const useSearchPlaces = (searchTerms: string[] | string) => {
       } else if (typeof searchTerms === 'string' && searchTerms.trim().length > 0) {
         const cleanedSearchTerm = searchTerms.trim();
         // Legacy support for single string search, apply OR across fields for this single string
-        queryBuilder = queryBuilder.or(
-          `name.ilike.%${cleanedSearchTerm}%,type.ilike.%${cleanedSearchTerm}%,location.ilike.%${cleanedSearchTerm}%,diet_tags.ilike.%${cleanedSearchTerm}%`
-        );
+        const searchPattern = `%${cleanedSearchTerm}%`;
+        queryBuilder = queryBuilder
+          .or(`name.ilike.${searchPattern},type.ilike.${searchPattern},location.ilike.${searchPattern},diet_tags.ilike.${searchPattern}`);
+        
         console.log("Search query with single string (OR logic):", cleanedSearchTerm);
       } else {
         // If searchTerms is an empty string or invalid, return empty
