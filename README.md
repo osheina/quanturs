@@ -42,14 +42,15 @@ https://quantum-eco-pathway.lovable.app  — no login required
 
 ```mermaid
 graph TD
-  %% Subgraphs for clarity
+  %% Client
   subgraph Client
     A[React UI]
   end
 
+  %% Backend
   subgraph Backend
-    B[Supabase<br/>(GraphQL)]
-    C[CO₂ svc<br/>FastAPI (Docker)]
+    B["Supabase<br/>(GraphQL)"]
+    C["CO₂ svc<br/>FastAPI (Docker)"]
     D[(Postgres)]
   end
 
