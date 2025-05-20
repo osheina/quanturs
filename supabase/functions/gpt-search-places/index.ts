@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // Using the generally recommended import for supabase-js v2 in Deno
@@ -48,16 +47,18 @@ The user's query is "healthy". Your goal is to help them find places with releva
 Generate a JSON array containing *one* of the following specific keyword arrays: ["vegan"], ["keto"], or ["organic"]. Choose the one most likely to yield results or cycle through them if this function were called repeatedly (but for a single call, pick one).
 Example: ["vegan"] or ["keto"]. Return ONLY the JSON array.`;
     } else {
+      // New, more restrictive prompt for general queries
       gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
 The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
 This search functionality ONLY supports English queries.
 If the user's query is **not in English**, return an empty JSON array: [].
-If the query **is in English** (and not just "healthy" which is handled by a different logic), generate a concise array of 2 to 4 specific and effective English search keywords.
-The goal is to find relevant places. **Consider that database descriptions might use common related terms, broader categories, or handle common misspellings. For example, if a part of the query is 'healthy food spot', keywords might be ['healthy', 'food', 'restaurant', 'vegan options'].**
+If the query **is in English** (and not "healthy"), generate a concise array of 2 to 3 core English search keywords directly derived from the user's query. All keywords you return will be used in an AND conjunction search, meaning results MUST match ALL keywords.
+Extract the most essential terms. Avoid adding speculative or overly broad/narrow related terms unless they are critical synonyms or direct components of a phrase in the query.
 For example:
-- Input: 'vegan brunch LA', keywords might be ['vegan', 'brunch', 'LA'].
-- Input: 'eco hotel Malibu', keywords could be ['eco-friendly', 'hotel', 'Malibu'].
-Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] or [] if not in English.`;
+- Input: 'vegan brunch LA', keywords should be ['vegan', 'brunch', 'LA'].
+- Input: 'eco hotel Malibu', keywords should be ['eco-friendly', 'hotel', 'Malibu'] (here 'eco-friendly' is a direct, common synonym for 'eco').
+- Input: 'hike los angeles', keywords should be ['hike', 'los angeles']. Do not add 'trails' or 'outdoors' unless the user explicitly typed them.
+Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not in English.`;
     }
 
     console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
@@ -69,10 +70,10 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o-mini", // Changed to gpt-4o-mini as per project context
         messages: [{ role: "user", content: gptPrompt }],
-        temperature: 0.2,
-        max_tokens: 60,
+        temperature: 0.1, // Reduced temperature for more deterministic output
+        max_tokens: 50,   // Reduced max_tokens as fewer keywords are expected
       }),
     });
 
@@ -89,50 +90,46 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     if (gptData.choices && gptData.choices[0] && gptData.choices[0].message && gptData.choices[0].message.content) {
       try {
         const rawContent = gptData.choices[0].message.content.trim();
-        // Ensure it's valid JSON and an array of strings
         const parsedContent = JSON.parse(rawContent);
         if (Array.isArray(parsedContent) && parsedContent.every(kw => typeof kw === 'string')) {
             keywords = parsedContent;
         } else {
             console.warn("gpt-search-places: GPT returned non-array or non-string array. Raw:", rawContent);
-            // Fallback for non-healthy query if parsing failed for some reason
             if (lowerCaseQuery !== "healthy") {
                 const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
                 if (isLikelyEnglish) {
-                    keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+                    keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
                 } else {
                     keywords = [];
                 }
             } else {
-                keywords = []; // For "healthy" query, if parsing fails, return no keywords to avoid issues
+                keywords = [];
             }
         }
       } catch (e) {
         console.warn("gpt-search-places: Failed to parse GPT keywords. Error:", e.message, "Raw content:", gptData.choices[0].message.content);
-         // Fallback for non-healthy query
         if (lowerCaseQuery !== "healthy") {
             const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
             if (isLikelyEnglish) {
-               keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+               keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
             } else {
                keywords = [];
             }
         } else {
-            keywords = []; // For "healthy" query, if parsing fails, return no keywords
+            keywords = [];
         }
       }
     } else {
        console.warn("gpt-search-places: No content in GPT response.");
-        // Fallback for non-healthy query
        if (lowerCaseQuery !== "healthy") {
            const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
            if (isLikelyEnglish) {
-              keywords = query.split(/\s+/).filter(t => t.length >= 1).slice(0,5);
+              keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
            } else {
               keywords = [];
            }
        } else {
-           keywords = []; // For "healthy" query, if no content, return no keywords
+           keywords = [];
        }
     }
     
@@ -147,8 +144,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2", "keyword3"] 
     
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
     
-    // Cleaned tokens are already handled by GPT generating an array of strings.
-    // Ensure they are lowercase just in case.
     const cleanedTokens = keywords.map(token => String(token || "").trim().toLowerCase()).filter(token => token !== "");
 
     if (cleanedTokens.length === 0) {
