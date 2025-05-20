@@ -4,8 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import RestaurantCard from "@/components/RestaurantCard";
 import { useSearchPlaces } from "@/hooks/useSearchPlaces";
-
+import { Database } from "@/integrations/supabase/types"; // Import Database types
 import { useState, useRef, useEffect } from "react";
+
+type Place = Database['public']['Tables']['quanturs_places']['Row'];
+
+interface GroupedResults {
+  [type: string]: Place[];
+}
+
+const groupResultsByType = (results: Place[]): GroupedResults => {
+  if (!results) return {};
+  return results.reduce((acc, place) => {
+    const type = place.type || "Other"; // Default to "Other" if type is null/undefined
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(place);
+    return acc;
+  }, {} as GroupedResults);
+};
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,13 +36,11 @@ const SearchBar = () => {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  // Now useSearchPlaces will take the debounced string directly
   const { results, isLoading, error } = useSearchPlaces(debounced);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // setDebounced is already handled by useEffect, but this ensures instant trigger if needed
-    setDebounced(searchTerm.trim()); 
+    setDebounced(searchTerm.trim());
     inputRef.current?.blur();
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,8 +53,8 @@ const SearchBar = () => {
   };
 
   const showNoHits = debounced && !isLoading && (!results || results.length === 0);
-  // Removed showTooMany logic as GPT will handle keyword relevance
-  // const showTooMany = tokens.length >= 3 && showNoHits; 
+  const groupedResults = results ? groupResultsByType(results) : {};
+  const groupKeys = Object.keys(groupedResults);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -66,10 +82,9 @@ const SearchBar = () => {
       {debounced && (
         <div
           ref={resultsRef}
-          className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin rounded-xl backdrop-blur-sm bg-black/20"
+          className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin rounded-xl backdrop-blur-sm bg-black/20 p-4 md:p-6" // Added padding
         >
           {isLoading ? (
-            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="space-y-4">
@@ -79,32 +94,35 @@ const SearchBar = () => {
                 </div>
               ))}
             </div>
-          ) : results && results.length ? (
+          ) : groupKeys.length > 0 ? (
             <>
               <h2 className="text-xl font-semibold mb-6">
-                Found&nbsp;{results.length}&nbsp;spot{results.length > 1 && "s"}
+                Found&nbsp;{results?.length}&nbsp;spot{results && results.length > 1 ? "s" : ""}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.map(p => (
-                  <RestaurantCard
-                    key={p.id}
-                    image={p.image_url}
-                    name={p.name ?? ""}
-                    cuisine={p.type} // Assuming type is cuisine-like
-                    rating={4.5} // Placeholder, as rating is not in quanturs_places
-                    priceRange="$$$" // Placeholder
-                    description={p.notes ?? ""}
-                    location={p.location ?? ""}
-                    // You can add co2_kg and co2_rating here if RestaurantCard supports it
-                  />
-                ))}
-              </div>
+              {groupKeys.map(type => (
+                <div key={type} className="mb-8">
+                  <h3 className="text-lg font-medium capitalize mb-4 pb-2 border-b border-primary/20">{type} ({groupedResults[type].length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {groupedResults[type].map(p => (
+                      <RestaurantCard
+                        key={p.id}
+                        image={p.image_url}
+                        name={p.name ?? ""}
+                        cuisine={p.type ?? "Unknown Type"} // Use type as cuisine
+                        rating={4.5} // Placeholder
+                        priceRange="$$$" // Placeholder
+                        description={p.notes ?? ""}
+                        location={p.location ?? ""}
+                        co2_kg={p.co2_kg ?? undefined}
+                        co2_rating={p.co2_rating ?? undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </>
           ) : (
             <div className="text-center py-12 text-gray-200">
-              {/* {showTooMany
-                ? "No matches — try fewer keywords"
-                : "No matches found"} */}
               No matches found
               {error && <p className="mt-2 text-red-400 text-sm">{error.message}</p>}
             </div>
