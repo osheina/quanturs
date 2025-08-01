@@ -63,24 +63,55 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
 
     console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
 
-    const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini", // Changed to gpt-4o-mini as per project context
-        messages: [{ role: "user", content: gptPrompt }],
-        temperature: 0.1, // Reduced temperature for more deterministic output
-        max_tokens: 50,   // Reduced max_tokens as fewer keywords are expected
-      }),
-    });
+    let gptResponse;
+    try {
+      gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: gptPrompt }],
+          temperature: 0.1,
+          max_tokens: 50,
+        }),
+      });
 
-    if (!gptResponse.ok) {
-      const errorBody = await gptResponse.text();
-      console.error("gpt-search-places: OpenAI API error response:", errorBody);
-      throw new Error(`OpenAI API error: ${gptResponse.status} ${errorBody}`);
+      if (!gptResponse.ok) {
+        throw new Error(`OpenAI API error: ${gptResponse.status}`);
+      }
+    } catch (openaiError) {
+      console.error("gpt-search-places: OpenAI API failed, using fallback:", openaiError.message);
+      // Fallback: use simple keyword extraction
+      const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
+      if (isLikelyEnglish) {
+        const fallbackKeywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 2).slice(0, 3);
+        console.log("gpt-search-places: Using fallback keywords:", fallbackKeywords);
+        
+        if (fallbackKeywords.length > 0) {
+          const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
+          const { data: places, error: dbError } = await supabase.rpc(
+            "search_places_by_keywords",
+            { search_keywords: fallbackKeywords }
+          );
+
+          if (dbError) {
+            console.error("gpt-search-places: Supabase RPC error:", dbError);
+            throw dbError;
+          }
+          
+          console.log("gpt-search-places: Found places via fallback:", places?.length || 0);
+          return new Response(JSON.stringify(places || []), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+      
+      return new Response(JSON.stringify([]), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const gptData = await gptResponse.json();
