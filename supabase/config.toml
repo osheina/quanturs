@@ -17,6 +17,9 @@
 [functions.generate-guide-images]
   verify_jwt = false
 
+[functions.generate-place-images]
+  verify_jwt = false
+
 # [functions.another-function]
 #   verify_jwt = true
 #   [functions.another-function.secrets]

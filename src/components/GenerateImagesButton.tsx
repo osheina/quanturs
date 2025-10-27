@@ -14,10 +14,10 @@ export const GenerateImagesButton = () => {
     try {
       toast({
         title: "Генерация изображений",
-        description: "Начинаем генерировать изображения для гайдов...",
+        description: "Генерируем изображения для мест без фото через AI...",
       });
 
-      const { data, error } = await supabase.functions.invoke('generate-guide-images', {
+      const { data, error } = await supabase.functions.invoke('generate-place-images', {
         body: {}
       });
 
@@ -37,8 +37,8 @@ export const GenerateImagesButton = () => {
       const totalCount = data.results?.length || 0;
 
       toast({
-        title: "Успешно!",
-        description: `Сгенерировано ${successCount} из ${totalCount} изображений. Обновите страницу.`,
+        title: "Готово!",
+        description: `Сгенерировано ${successCount} из ${totalCount} изображений для мест. Страница обновится.`,
       });
 
       // Обновляем страницу через 2 секунды
@@ -74,7 +74,7 @@ export const GenerateImagesButton = () => {
       ) : (
         <>
           <Image className="h-4 w-4" />
-          Сгенерировать изображения
+          Добавить фото к местам
         </>
       )}
     </Button>
