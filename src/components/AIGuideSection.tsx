@@ -9,6 +9,7 @@ import { generateAIGuide, fetchPremadeGuides, downloadGuide } from "@/services/g
 import { TravelGuide } from "@/models/TravelGuide";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import React from "react";
+import { GenerateImagesButton } from "@/components/GenerateImagesButton";
 
 const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
@@ -224,7 +225,10 @@ const AIGuideSection = () => {
 
       {/* Featured Guides Section */}
       <div className="mt-12">
-        <h3 className="text-xl font-semibold mb-6 text-gray-900">Featured Guides</h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-gray-900">Featured Guides</h3>
+          <GenerateImagesButton />
+        </div>
         {isLoadingGuides ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
@@ -245,7 +249,16 @@ const AIGuideSection = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {premadeGuides.map((guide) => (
-              <Card key={guide.id} className="hover:shadow-lg transition-shadow bg-white">
+              <Card key={guide.id} className="hover:shadow-lg transition-shadow bg-white overflow-hidden">
+                {guide.image_url && (
+                  <div className="w-full h-48 overflow-hidden">
+                    <img 
+                      src={guide.image_url} 
+                      alt={guide.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <div className="p-6">
                   <h4 className="text-lg font-semibold text-gray-900">{guide.title}</h4>
                   <p className="text-gray-700 mb-4 line-clamp-2">{guide.description}</p>

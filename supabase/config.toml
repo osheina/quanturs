@@ -14,6 +14,9 @@
 [functions.gpt-search-places]
   verify_jwt = false # For now, allow unauthenticated access for testing. Change if needed.
 
+[functions.generate-guide-images]
+  verify_jwt = false
+
 # [functions.another-function]
 #   verify_jwt = true
 #   [functions.another-function.secrets]
