@@ -13,17 +13,47 @@ serve(async (req) => {
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.log("generate-guide-images: Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized. Please sign in.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
-    if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
       throw new Error('Missing required environment variables');
     }
 
+    // Verify user token
+    const userSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await userSupabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      console.log("generate-guide-images: Invalid token:", claimsError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Invalid session. Please sign in again.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("generate-guide-images: Authenticated user:", userId);
+
+    // Use service role for database operations (admin access for premade guides)
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Получаем гайды без изображений
+    // Fetch premade guides without images
     const { data: guides, error: fetchError } = await supabase
       .from('travel_guides')
       .select('*')
@@ -48,7 +78,6 @@ serve(async (req) => {
 
     for (const guide of guides) {
       try {
-        // Создаем промпт для генерации изображения
         const imagePrompt = `Create a beautiful, modern travel poster illustration for: ${guide.title}. ${guide.description || ''}. Style: vibrant colors, minimalist, professional travel photography aesthetic, high quality, 16:9 aspect ratio`;
         
         console.log(`Generating image for guide: ${guide.title}`);
@@ -79,7 +108,6 @@ serve(async (req) => {
         const base64Image = data.data[0].b64_json;
         const imageDataUrl = `data:image/png;base64,${base64Image}`;
 
-        // Обновляем запись в базе данных
         const { error: updateError } = await supabase
           .from('travel_guides')
           .update({ image_url: imageDataUrl })

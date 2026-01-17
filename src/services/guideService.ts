@@ -164,12 +164,21 @@ export async function generateAIGuide(prompt: string, selectedTags: string[] = [
     }
 
     /* --- write to DB --- */
-    const newGuide: TravelGuide = {
+    // Get current user session for user_id
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
+    
+    if (!userId) {
+      throw new Error("You must be logged in to create a travel guide.");
+    }
+
+    const newGuide: TravelGuide & { user_id: string } = {
       title: guideTitle,
       prompt,
       content: JSON.stringify(content),
       is_premade: false,
-      description: `Personalized eco-friendly itinerary based on: "${prompt}"`
+      description: `Personalized eco-friendly itinerary based on: "${prompt}"`,
+      user_id: userId
     };
 
     const { data, error } = await supabase

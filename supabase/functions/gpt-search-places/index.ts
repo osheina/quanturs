@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// Using the generally recommended import for supabase-js v2 in Deno
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import type { Database } from "../_shared/database.types.ts";
 
@@ -19,11 +18,41 @@ serve(async (req) => {
   }
 
   try {
-    if (!OPENAI_API_KEY) {
-      throw new Error("Missing OPENAI_API_KEY environment variable");
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.log("gpt-search-places: Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized. Please sign in to search.' }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       throw new Error("Missing Supabase environment variables");
+    }
+
+    // Create client with user's auth token
+    const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    // Verify the token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      console.log("gpt-search-places: Invalid token:", claimsError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Invalid session. Please sign in again.' }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("gpt-search-places: Authenticated user:", userId);
+
+    if (!OPENAI_API_KEY) {
+      throw new Error("Missing OPENAI_API_KEY environment variable");
     }
 
     const { query } = await req.json();
@@ -47,7 +76,6 @@ The user's query is "healthy". Your goal is to help them find places with releva
 Generate a JSON array containing *one* of the following specific keyword arrays: ["vegan"], ["keto"], or ["organic"]. Choose the one most likely to yield results or cycle through them if this function were called repeatedly (but for a single call, pick one).
 Example: ["vegan"] or ["keto"]. Return ONLY the JSON array.`;
     } else {
-      // New, more restrictive prompt for general queries
       gptPrompt = `You are a search keyword generator for a travel app. The user is searching for: "${query}".
 The database has places with 'name', 'type', 'location', 'city', 'diet_tags', 'vibe', and 'notes' attributes. These attributes are primarily in English.
 This search functionality ONLY supports English queries.
@@ -61,7 +89,7 @@ For example:
 Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not in English.`;
     }
 
-    console.log("gpt-search-places: Sending prompt to OpenAI:", gptPrompt);
+    console.log("gpt-search-places: Sending prompt to OpenAI");
 
     let gptResponse;
     try {
@@ -91,7 +119,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
         console.log("gpt-search-places: Using fallback keywords:", fallbackKeywords);
         
         if (fallbackKeywords.length > 0) {
-          const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
           const { data: places, error: dbError } = await supabase.rpc(
             "search_places_by_keywords",
             { search_keywords: fallbackKeywords }
@@ -115,7 +142,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
     }
 
     const gptData = await gptResponse.json();
-    console.log("gpt-search-places: OpenAI response data:", JSON.stringify(gptData));
+    console.log("gpt-search-places: OpenAI response received");
 
     let keywords: string[] = [];
     if (gptData.choices && gptData.choices[0] && gptData.choices[0].message && gptData.choices[0].message.content) {
@@ -125,11 +152,11 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
         if (Array.isArray(parsedContent) && parsedContent.every(kw => typeof kw === 'string')) {
             keywords = parsedContent;
         } else {
-            console.warn("gpt-search-places: GPT returned non-array or non-string array. Raw:", rawContent);
+            console.warn("gpt-search-places: GPT returned non-array or non-string array");
             if (lowerCaseQuery !== "healthy") {
                 const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
                 if (isLikelyEnglish) {
-                    keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
+                    keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3);
                 } else {
                     keywords = [];
                 }
@@ -138,11 +165,11 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
             }
         }
       } catch (e) {
-        console.warn("gpt-search-places: Failed to parse GPT keywords. Error:", e.message, "Raw content:", gptData.choices[0].message.content);
+        console.warn("gpt-search-places: Failed to parse GPT keywords");
         if (lowerCaseQuery !== "healthy") {
             const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
             if (isLikelyEnglish) {
-               keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
+               keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3);
             } else {
                keywords = [];
             }
@@ -155,7 +182,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
        if (lowerCaseQuery !== "healthy") {
            const isLikelyEnglish = /^[a-zA-Z0-9\s.,'-]+$/.test(query);
            if (isLikelyEnglish) {
-              keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3); // Fallback to 3 keywords
+              keywords = query.toLowerCase().split(/\s+/).filter(t => t.length >= 1).slice(0,3);
            } else {
               keywords = [];
            }
@@ -172,8 +199,6 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    
-    const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!);
     
     const cleanedTokens = keywords.map(token => String(token || "").trim().toLowerCase()).filter(token => token !== "");
 
@@ -202,7 +227,7 @@ Return ONLY a JSON array of strings. e.g., ["keyword1", "keyword2"] or [] if not
     });
 
   } catch (error) {
-    console.error("gpt-search-places: Error in Edge Function:", error.message, error.stack);
+    console.error("gpt-search-places: Error in Edge Function:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
