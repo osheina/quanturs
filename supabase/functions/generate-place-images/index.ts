@@ -12,18 +12,48 @@ serve(async (req) => {
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.log("generate-place-images: Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized. Please sign in.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
-    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
       console.error('Missing environment variables');
       throw new Error('Missing required environment variables');
     }
 
+    // Verify user token
+    const userSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await userSupabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      console.log("generate-place-images: Invalid token:", claimsError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Invalid session. Please sign in again.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("generate-place-images: Authenticated user:", userId);
+
+    // Use service role for database operations
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Получаем места без изображений
+    // Fetch places without images
     const { data: places, error: fetchError } = await supabase
       .from('quanturs_places')
       .select('*')
@@ -48,7 +78,6 @@ serve(async (req) => {
 
     for (const place of places) {
       try {
-        // Создаем детальный промпт для каждого типа места
         const typeDescriptions: Record<string, string> = {
           gallery: 'art gallery interior with modern exhibition space',
           market: 'vibrant farmers market with fresh produce and local goods',
@@ -105,10 +134,9 @@ serve(async (req) => {
           const errorText = await response.text();
           console.error(`AI Gateway error for place ${place.id}:`, response.status, errorText);
           
-          // Handle rate limits gracefully
           if (response.status === 429) {
             results.push({ place_id: place.id, success: false, error: 'Rate limit exceeded, try again later' });
-            break; // Stop generating to avoid hitting rate limits repeatedly
+            break;
           }
           
           results.push({ place_id: place.id, success: false, error: errorText });
@@ -116,9 +144,8 @@ serve(async (req) => {
         }
 
         const data = await response.json();
-        console.log('AI Gateway response:', JSON.stringify(data).substring(0, 200));
+        console.log('AI Gateway response received');
         
-        // Extract base64 image from response
         const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
         
         if (!imageUrl) {
@@ -127,7 +154,6 @@ serve(async (req) => {
           continue;
         }
 
-        // Update the database with the image
         const { error: updateError } = await supabase
           .from('quanturs_places')
           .update({ image_url: imageUrl })
@@ -141,7 +167,7 @@ serve(async (req) => {
           results.push({ place_id: place.id, name: place.name, success: true });
         }
 
-        // Add a small delay between requests to avoid rate limiting
+        // Delay between requests
         await new Promise(resolve => setTimeout(resolve, 1000));
 
       } catch (error) {

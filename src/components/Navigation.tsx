@@ -1,6 +1,6 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
+import { UserMenu } from "./UserMenu";
 
 const Navigation = () => {
   return (
@@ -9,13 +9,16 @@ const Navigation = () => {
         <div className="text-xl font-bold text-primary">
           <Link to="/">Quanturs</Link>
         </div>
-        <ul className="flex space-x-6">
-          <li>
-            <Link to="/" className="hover:text-primary transition-colors">
-              Home
-            </Link>
-          </li>
-        </ul>
+        <div className="flex items-center gap-6">
+          <ul className="flex space-x-6">
+            <li>
+              <Link to="/" className="hover:text-primary transition-colors">
+                Home
+              </Link>
+            </li>
+          </ul>
+          <UserMenu />
+        </div>
       </nav>
     </header>
   );
