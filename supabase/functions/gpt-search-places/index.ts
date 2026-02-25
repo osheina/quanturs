@@ -18,38 +18,12 @@ serve(async (req) => {
   }
 
   try {
-    // Authentication check
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      console.log("gpt-search-places: Missing or invalid Authorization header");
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized. Please sign in to search.' }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       throw new Error("Missing Supabase environment variables");
     }
 
-    // Create client with user's auth token
-    const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
-    // Verify the token
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      console.log("gpt-search-places: Invalid token:", claimsError?.message);
-      return new Response(
-        JSON.stringify({ error: 'Invalid session. Please sign in again.' }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const userId = claimsData.claims.sub;
-    console.log("gpt-search-places: Authenticated user:", userId);
+    // Create client with anon key (search is public)
+    const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     if (!OPENAI_API_KEY) {
       throw new Error("Missing OPENAI_API_KEY environment variable");
