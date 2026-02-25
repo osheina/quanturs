@@ -9,7 +9,7 @@ import { generateAIGuide, fetchPremadeGuides, downloadGuide } from "@/services/g
 import { TravelGuide } from "@/models/TravelGuide";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import React from "react";
-import { GenerateImagesButton } from "@/components/GenerateImagesButton";
+
 
 const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
@@ -227,7 +227,7 @@ const AIGuideSection = () => {
       <div className="mt-12">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">Featured Guides</h3>
-          <GenerateImagesButton />
+          
         </div>
         {isLoadingGuides ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
