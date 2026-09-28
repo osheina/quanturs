@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Leaf, LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 import { z } from 'zod';
 
 // Validation schemas
@@ -110,13 +110,9 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#F2FCE2] to-[#E5DEFF] p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4"><a href="/" className="editorial-serif mb-8 text-4xl font-semibold text-primary">Quanturs<span className="text-accent">.</span></a>
+      <Card className="w-full max-w-md rounded-sm border-border bg-card shadow-none">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Leaf className="h-8 w-8 text-green-600" />
-            <span className="text-2xl font-bold text-green-800">Quanturs</span>
-          </div>
           <CardTitle className="text-xl">
             {isLogin ? 'Welcome back' : 'Create an account'}
           </CardTitle>
@@ -144,7 +140,7 @@ export default function Auth() {
                 className={errors.email ? 'border-red-500' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
+                <p className="text-sm text-destructive">{errors.email}</p>
               )}
             </div>
             
@@ -163,7 +159,7 @@ export default function Auth() {
                 className={errors.password ? 'border-red-500' : ''}
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
+                <p className="text-sm text-destructive">{errors.password}</p>
               )}
             </div>
           </CardContent>
@@ -171,7 +167,7 @@ export default function Auth() {
           <CardFooter className="flex flex-col gap-4">
             <Button 
               type="submit" 
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full"
               disabled={loading}
             >
               {loading ? (
