@@ -124,6 +124,7 @@ const AIGuideSection = () => {
     return (
       <div className="space-y-6 mt-4">
         {content.summary && <p className="text-muted-foreground">{content.summary}</p>}
+        <p className="text-xs text-muted-foreground">Places come from the Quanturs catalog. Diet matches are based on catalog tags only; always confirm allergies, hours and prices with each venue.</p>
         {content.days.map((day, index) => (
           <Card key={index} className="p-6">
             <h3 className="text-xl font-semibold mb-4">{day.title}</h3>
@@ -215,7 +216,7 @@ const AIGuideSection = () => {
         )}
         {isGenerating && (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Choosing verified places from our catalog… this can take up to a minute.
+            <Loader2 className="h-4 w-4 animate-spin" /> Choosing places from our catalog… this can take up to a minute.
           </p>
         )}
         <Button 

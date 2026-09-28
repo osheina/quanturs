@@ -126,6 +126,7 @@ export type Database = {
         Returns: number
       }
       compute_co2_rating: { Args: { c: number }; Returns: number }
+      reserve_guide_generation: { Args: never; Returns: string }
       search_places_by_keywords: {
         Args: { search_keywords: string[] }
         Returns: {

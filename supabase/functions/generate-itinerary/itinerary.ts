@@ -54,7 +54,11 @@ export function parseGuideRequest(body: unknown): GuideRequest {
     .filter((i): i is string => typeof i === "string")
     .map((i) => i.trim().toLowerCase().slice(0, 40))
     .filter(Boolean);
-  const diet = typeof b.diet === "string" && b.diet.trim() ? b.diet.trim().toLowerCase().slice(0, 40) : null;
+  let diet: string | null = null;
+  if (b.diet !== undefined && b.diet !== null && b.diet !== "") {
+    diet = DIETS.find((d) => d === b.diet) ?? null;
+    if (!diet) throw new ItineraryError("bad_diet", `Diet must be one of: ${DIETS.join(", ")}.`, 400);
+  }
   const prompt = typeof b.prompt === "string" ? b.prompt.trim() : "";
   if (prompt.length > 500) throw new ItineraryError("prompt_too_long", "Description must be 500 characters or fewer.", 400);
   return { city, days, pace, interests, diet, prompt };
@@ -81,6 +85,28 @@ export function requiredStops(req: GuideRequest) {
   return req.days * STOPS_PER_DAY[req.pace];
 }
 
+export const DIETS = ["vegan", "vegetarian", "pescatarian", "gluten-free"] as const;
+export type Diet = (typeof DIETS)[number];
+export const FOOD_TYPES = new Set(["cafe", "restaurant", "brunch", "brunch spot", "rooftop bar", "market"]);
+const COMPATIBLE_TAGS: Record<Diet, string[]> = {
+  vegan: ["vegan"],
+  vegetarian: ["vegan", "vegetarian"],
+  pescatarian: ["vegan", "vegetarian", "pescatarian"],
+  "gluten-free": ["gluten-free"],
+};
+export const isFood = (p: Place) => FOOD_TYPES.has(p.type.toLowerCase().trim());
+const tagsOf = (p: Place) => (p.diet_tags ?? "").toLowerCase().split(/[;,]/).map((t) => t.trim()).filter(Boolean);
+/** A place is diet-compatible if it is not a food venue, or its catalog diet_tags explicitly list a compatible tag. */
+export function isDietCompatible(p: Place, diet: string | null): boolean {
+  if (!diet || !isFood(p)) return true;
+  const ok = COMPATIBLE_TAGS[diet as Diet];
+  if (!ok) return false;
+  return tagsOf(p).some((t) => ok.includes(t));
+}
+export function filterByDiet(places: Place[], diet: string | null): Place[] {
+  return places.filter((p) => isDietCompatible(p, diet));
+}
+
 /** Throws a user-actionable error when the city catalog cannot support the request. */
 export function assertCatalogSufficient(cityPlaces: Place[], req: GuideRequest) {
   const need = requiredStops(req);
@@ -89,8 +115,10 @@ export function assertCatalogSufficient(cityPlaces: Place[], req: GuideRequest) 
     throw new ItineraryError(
       "insufficient_catalog",
       cityPlaces.length === 0
-        ? `We don't have verified places in ${req.city} yet. Try Los Angeles, San Francisco or San Diego.`
-        : `Only ${cityPlaces.length} verified places in ${req.city} — not enough for ${req.days} ${req.pace} day(s). Try ${Math.max(1, maxDays)} day(s) or a relaxed pace.`,
+        ? `We don't have catalog places in ${req.city} yet. Try Los Angeles, San Francisco or San Diego.`
+        : req.diet
+        ? `Only ${cityPlaces.length} catalog places in ${req.city} match a ${req.diet} diet (food spots must be tagged ${req.diet} in our catalog) — not enough for ${req.days} ${req.pace} day(s). Try ${Math.max(1, maxDays)} day(s), a relaxed pace, or no diet filter.`
+        : `Only ${cityPlaces.length} catalog places in ${req.city} — not enough for ${req.days} ${req.pace} day(s). Try ${Math.max(1, maxDays)} day(s) or a relaxed pace.`,
     );
   }
 }
@@ -171,44 +199,48 @@ export function validateAIItinerary(rawText: string, offered: Place[], req: Guid
   const byId = new Map(offered.filter((p) => p.city === req.city).map((p) => [p.id, p]));
   const used = new Set<number>();
   const perDay = STOPS_PER_DAY[req.pace];
+  const bad = (msg: string) => new ItineraryError("malformed_ai_response", `${msg} Please try again.`, 502);
+  const title = clean(o.title, 100);
+  const summary = clean(o.summary, 400);
+  if (!title || !summary) throw bad("The AI itinerary was missing a title or summary.");
 
   const days = o.days.map((d, i) => {
     const day = d as Record<string, unknown>;
-    if (!day || !Array.isArray(day.stops))
-      throw new ItineraryError("malformed_ai_response", "The AI returned an itinerary in an unexpected format. Please try again.", 502);
-    const stops: ValidatedStop[] = [];
-    for (const s of day.stops as Record<string, unknown>[]) {
-      const id = s?.place_id;
-      if (typeof id !== "number" || !Number.isInteger(id)) continue;
+    if (!day || typeof day !== "object" || !Array.isArray(day.stops)) throw bad("The AI returned an itinerary in an unexpected format.");
+    const theme = clean(day.theme, 80);
+    if (!theme) throw bad(`Day ${i + 1} had no theme.`);
+    if (day.stops.length !== perDay) throw bad(`Day ${i + 1} had ${day.stops.length} stops instead of ${perDay}.`);
+    const slots = new Set<string>();
+    const stops: ValidatedStop[] = (day.stops as unknown[]).map((raw) => {
+      const s = raw as Record<string, unknown>;
+      if (!s || typeof s !== "object") throw bad("A stop was malformed.");
+      const id = s.place_id;
+      if (typeof id !== "number" || !Number.isInteger(id)) throw bad("A stop had an invalid place id.");
       const place = byId.get(id);
-      if (!place || used.has(id)) continue; // unknown, other-city, or duplicate -> dropped
-      if (!TIME_SLOTS.includes(s.slot as (typeof TIME_SLOTS)[number])) continue;
+      if (!place) throw bad("The AI picked a place outside the catalog for this city.");
+      if (used.has(id)) throw bad("The AI repeated a place.");
+      if (!isDietCompatible(place, req.diet)) throw bad("The AI picked a food spot that doesn't match your diet.");
+      if (typeof s.slot !== "string" || !TIME_SLOTS.includes(s.slot as (typeof TIME_SLOTS)[number])) throw bad("A stop had an invalid time slot.");
+      if (slots.has(s.slot)) throw bad(`Day ${i + 1} used the same time slot twice.`);
+      const why = clean(s.why, 240);
+      if (!why) throw bad("A stop was missing its description.");
       used.add(id);
-      stops.push({
-        place_id: id,
-        slot: s.slot as string,
-        why: clean(s.why, 240),
-        name: place.name!,
-        type: place.type,
-        location: place.location,
-        image_url: place.image_url,
-        co2_kg: place.co2_kg,
-        co2_rating: place.co2_rating,
-      });
-      if (stops.length >= perDay) break;
-    }
-    if (stops.length === 0)
-      throw new ItineraryError("malformed_ai_response", `The AI couldn't match day ${i + 1} to verified places. Please try again.`, 502);
+      slots.add(s.slot);
+      return {
+        place_id: id, slot: s.slot, why, name: place.name!, type: place.type, location: place.location,
+        image_url: place.image_url, co2_kg: place.co2_kg, co2_rating: place.co2_rating,
+      };
+    });
     stops.sort((a, b) => TIME_SLOTS.indexOf(a.slot as never) - TIME_SLOTS.indexOf(b.slot as never));
-    return { title: `Day ${i + 1} – ${clean(day.theme, 80) || "Explore"}`, stops };
+    return { title: `Day ${i + 1} – ${theme}`, stops };
   });
 
   return {
     version: 2,
     city: req.city,
     pace: req.pace,
-    title: clean(o.title, 100) || `${req.days}-day ${req.city} eco itinerary`,
-    summary: clean(o.summary, 400),
+    title,
+    summary,
     days,
   };
 }
