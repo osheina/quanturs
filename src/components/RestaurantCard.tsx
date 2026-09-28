@@ -33,7 +33,7 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description,
   const displayImage = getDisplayImage(image, cuisine);
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden rounded-sm border-border bg-card shadow-none transition-shadow hover:shadow-[var(--shadow-editorial)]">
       <div className="aspect-video relative overflow-hidden">
         <img 
           src={displayImage} 
@@ -51,7 +51,7 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description,
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between mb-1">
           <CardTitle className="text-xl font-bold">{name}</CardTitle>
-          <Badge variant="outline" className="flex items-center gap-1 rounded-full">
+          <Badge variant="outline" className="flex items-center gap-1 rounded-sm">
             <BadgeDollarSign className="w-4 h-4" />
             {priceRange}
           </Badge>
@@ -59,17 +59,17 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description,
         <CardDescription className="flex items-center justify-between">
           <span className="text-sm font-medium">{cuisine}</span>
           <span className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <Star className="w-4 h-4 fill-accent text-accent" />
             <span className="font-semibold">{rating}</span>
           </span>
         </CardDescription>
         <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-          <MapPin className="w-4 h-4 text-gray-500" />
+          <MapPin className="w-4 h-4 text-muted-foreground" />
           <span>{location}</span>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 line-clamp-2">{description}</p> {/* Используем line-clamp для ограничения описания */}
+        <p className="text-sm text-muted-foreground line-clamp-2">{description}</p> {/* Используем line-clamp для ограничения описания */}
         <Co2Badge co2_kg={co2_kg} co2_rating={co2_rating} />
       </CardContent>
     </Card>

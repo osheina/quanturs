@@ -2,12 +2,7 @@
 import React from 'react';
 
 const co2Colors: Record<number, string> = {
-  1: "bg-green-600",
-  2: "bg-green-400",
-  3: "bg-yellow-300",
-  4: "bg-orange-400",
-  5: "bg-red-500",
-  6: "bg-gray-700"
+  1: "bg-primary", 2: "bg-primary", 3: "bg-accent", 4: "bg-accent", 5: "bg-destructive", 6: "bg-destructive"
 };
 
 const co2Labels: Record<number, string> = {
@@ -32,14 +27,14 @@ export default function Co2Badge({ co2_kg, co2_rating }: Co2BadgeProps) {
   const safeRating = Math.min(Math.max(Math.round(co2_rating), 1), 6);
   
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-700">
+    <div className="flex items-center gap-2 text-xs text-foreground">
       <div
-        className={`rounded-full px-2 py-1 text-white ${co2Colors[safeRating] || 'bg-gray-500'}`}
+        className={`rounded-full px-2 py-1 text-primary-foreground ${co2Colors[safeRating] || 'bg-muted'}`}
         title={`~${co2_kg.toFixed(2)} kg CO₂ per visit`}
       >
         CO₂ {safeRating}/6
       </div>
-      <span className="text-gray-400">{co2Labels[safeRating] || 'Unknown'}</span>
+      <span className="text-muted-foreground">{co2Labels[safeRating] || 'Unknown'}</span>
     </div>
   );
 }

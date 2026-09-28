@@ -10,9 +10,10 @@ import { vrExperiences } from "@/data/vrExperiences";
 
 const MainContent = () => {
   return (
-    <section className="py-16 px-4 container mx-auto">
+    <section className="border-t border-border py-12 px-6 md:px-10 max-w-7xl mx-auto">
+      <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-accent">THE EDIT / 03</p>
       <Tabs defaultValue="stays" className="w-full">
-        <TabsList className="w-full max-w-md mx-auto grid grid-cols-3">
+        <TabsList className="w-full max-w-md grid grid-cols-3">
           <TabsTrigger value="stays" className="flex items-center gap-2">
             <Leaf className="w-4 h-4" />
             Eco Stays

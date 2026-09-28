@@ -57,24 +57,24 @@ const SearchBar = () => {
   const groupKeys = Object.keys(groupedResults);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      <form onSubmit={onSubmit} className="relative flex gap-2">
-        <div className="relative flex-1">
+    <div className="w-full space-y-6">
+      <form onSubmit={onSubmit} className="relative flex flex-wrap gap-2">
+        <div className="relative min-w-[200px] flex-1">
           <Input
             ref={inputRef}
             type="search"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder='Try "vegan brunch LA" or "eco hotel Malibu"...'
-            className="pl-10 pr-4 py-6 text-lg rounded-full border-2 border-primary/20 focus:border-primary/40"
+            className="pl-10 pr-4 py-6 text-base rounded-sm border border-input bg-card"
             autoComplete="off"
             spellCheck={false}
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 w-5 h-5 pointer-events-none" />
         </div>
 
-        <Button type="submit" className="rounded-full px-6">Search</Button>
-        <Button variant="ghost" size="icon" onClick={clear} className="rounded-full" aria-label="Clear">
+        <Button type="submit" className="rounded-sm px-6">Search</Button>
+        <Button variant="ghost" size="icon" onClick={clear} className="rounded-sm" aria-label="Clear">
           <X className="w-5 h-5" />
         </Button>
       </form>
@@ -82,7 +82,7 @@ const SearchBar = () => {
       {debounced && (
         <div
           ref={resultsRef}
-          className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin rounded-xl backdrop-blur-sm bg-black/20 p-4 md:p-6" // Added padding
+          className="mt-8 animate-fade-in max-h-[70vh] overflow-y-auto pr-1 scrollbar-thin border-t border-border bg-card p-4 md:p-6" // Added padding
         >
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -122,9 +122,9 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="text-center py-12 text-gray-200">
+            <div className="text-center py-12 text-muted-foreground">
               No matches found
-              {error && <p className="mt-2 text-red-400 text-sm">{error.message}</p>}
+              {error && <p className="mt-2 text-destructive text-sm">{error.message}</p>}
             </div>
           )}
         </div>
