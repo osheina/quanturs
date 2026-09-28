@@ -42,13 +42,13 @@ const AIGuideSection = () => {
   const content = activeGuide ? safeParseGuide(activeGuide.content) : null;
 
   return (
-    <section id="create-guide" className="scroll-mt-4 px-6 py-14 md:px-10 md:py-20">
+    <section id="create-guide" className="scroll-mt-4 px-6 py-8 md:px-10 md:py-20">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-9 md:grid-cols-[0.8fr_1.2fr] md:gap-14 lg:gap-24">
+        <div className="grid gap-6 md:grid-cols-[0.8fr_1.2fr] md:gap-14 lg:gap-24">
           <div className="md:pt-3">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">FIELD NOTES / 01</p>
-            <h2 className="mt-4 max-w-lg text-5xl leading-[0.95] md:text-6xl lg:text-7xl">A journey with <em className="font-normal">your name on it.</em></h2>
-            <p className="mt-6 max-w-sm text-base leading-relaxed text-muted-foreground">Tell us how you want to travel. We’ll put together a multi-day itinerary from places in the Quanturs catalog.</p>
+            <h2 className="mt-3 max-w-lg text-4xl leading-[0.95] md:mt-4 md:text-6xl lg:text-7xl">A journey with <em className="font-normal">your name on it.</em></h2>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground md:mt-6 md:text-base">Tell us how you want to travel. We’ll put together a multi-day itinerary from places in the Quanturs catalog.</p>
             <div className="mt-10 hidden items-center gap-4 border-t border-border pt-6 md:flex">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent text-accent"><MapPin className="h-5 w-5" /></div>
               <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">Your destination. Your rhythm. A different way to see the familiar.</p>
