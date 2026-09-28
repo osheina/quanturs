@@ -7,7 +7,7 @@ const HeroSection = () => (
     <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />
     <div className="relative mx-auto w-full max-w-7xl px-6 py-9 text-primary-foreground md:px-10 md:py-12">
       <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] md:mb-6">THE TRAVEL JOURNAL · CALIFORNIA EDITION</p>
-      <h1 className="max-w-3xl text-5xl leading-[0.88] sm:text-7xl md:text-8xl">Quanturs<span className="text-accent">.</span><br /><em className="font-normal">Go your own way.</em></h1>
+      <h1 className="max-w-3xl text-5xl font-bold leading-[1.08] sm:text-6xl md:text-7xl">Quanturs<span className="text-accent">.</span><br /><span className="text-3xl font-medium sm:text-5xl md:text-6xl">Go your own way.</span></h1>
       <p className="mt-4 max-w-md text-sm leading-relaxed md:mt-7 md:text-lg">An itinerary shaped by your interests, your pace, and real places from our travel catalog.</p>
       <a href="#create-guide" className="mt-5 inline-flex items-center gap-3 border-b border-primary-foreground pb-2 text-sm font-semibold transition-colors hover:text-accent focus-visible:ring-2 focus-visible:ring-ring md:mt-8">Create your itinerary <ArrowDownRight className="h-4 w-4" /></a>
     </div>

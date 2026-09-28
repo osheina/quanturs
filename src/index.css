@@ -50,8 +50,8 @@
 @layer base {
   * { @apply border-border; }
   html { scroll-behavior: smooth; }
-  body { @apply min-h-screen bg-background text-foreground antialiased; font-family: 'DM Sans', sans-serif; }
-  h1, h2, h3, .editorial-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+  body { @apply min-h-screen bg-background text-foreground antialiased; font-family: 'DM Sans', Arial, sans-serif; }
+  h1, h2, h3, h4 { font-family: 'Manrope', 'DM Sans', Arial, sans-serif; font-style: normal; letter-spacing: 0; }
   :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
 }
 @media (prefers-reduced-motion: reduce) {
