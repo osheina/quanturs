@@ -1,0 +1,1 @@
+REVOKE ALL ON public.guide_generation_requests FROM anon;

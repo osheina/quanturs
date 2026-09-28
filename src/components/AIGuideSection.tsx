@@ -1,11 +1,14 @@
-import { Bot } from "lucide-react";
+import { Bot, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { safeParseGuide } from "@/lib/guideContent";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { generateAIGuide, fetchPremadeGuides, downloadGuide } from "@/services/guideService";
+import { generateAIGuide, fetchPremadeGuides, downloadGuide, GuideError, GUIDE_CITIES, type GuideCity, type GuidePace } from "@/services/guideService";
 import { TravelGuide } from "@/models/TravelGuide";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import React from "react";
@@ -15,7 +18,7 @@ const AIGuideSection = () => {
   const [prompt, setPrompt] = useState("");
   const { toast } = useToast();
   const [placeholder, setPlaceholder] = useState<string>(
-    "5 days in Los Angeles with vegan food"
+    "Vegan restaurants and art galleries"
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGuide, setGeneratedGuide] = useState<TravelGuide | null>(null);
@@ -27,33 +30,33 @@ const AIGuideSection = () => {
     queryFn: fetchPremadeGuides
   });
 
+  const { user } = useAuth();
+  const [city, setCity] = useState<GuideCity>("Los Angeles");
+  const [days, setDays] = useState(3);
+  const [pace, setPace] = useState<GuidePace>("balanced");
+  const [diet, setDiet] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const createGuideMutation = useMutation({
     mutationFn: generateAIGuide,
     onSuccess: (data) => {
       setIsGenerating(false);
-      if (data) {
-        setGeneratedGuide(data);
-        toast({
-          title: "Guide Created!",
-          description: "Your personalized eco-guide is ready.",
-        });
-      }
+      setGeneratedGuide(data);
+      toast({ title: "Guide Created!", description: "Your personalized eco-guide is ready." });
     },
-    onError: () => {
+    onError: (error: unknown) => {
       setIsGenerating(false);
-      toast({
-        title: "Guide Creation Error",
-        description: "Please try again or modify your request.",
-        variant: "destructive",
-      });
-    }
+      const msg = error instanceof GuideError ? error.message : "Could not create your guide. Please try again.";
+      setErrorMsg(msg);
+      toast({ title: "Guide Creation Error", description: msg, variant: "destructive" });
+    },
   });
 
   const examples = [
-    "Weekend in Los Angeles with vegan restaurants",
-    "5 days in California for eco-tourism",
-    "3 days in LA for sustainable shopping",
-    "3-day eco-tour in San Francisco"
+    "Vegan restaurants and art galleries",
+    "Hikes, farmers markets and secondhand shopping",
+    "Sustainable shopping and rooftop views",
+    "Wellness, parks and cozy cafes",
   ];
 
   const rotateExample = () => {
@@ -64,31 +67,17 @@ const AIGuideSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim()) {
-      toast({
-        title: "Enter Your Preferences",
-        description: "Tell us about the journey you're planning!",
-        variant: "destructive",
-      });
+    setErrorMsg(null);
+    if (!user) {
+      setErrorMsg("Please sign in to create a personalized guide.");
       return;
     }
-    
+    if (prompt.length > 500) {
+      setErrorMsg("Please keep your description under 500 characters.");
+      return;
+    }
     setIsGenerating(true);
-    toast({
-      title: "Creating Your Guide...",
-      description: "Our AI is crafting the perfect eco-friendly itinerary for you.",
-    });
-
-    createGuideMutation.mutate(prompt, {
-      onError: (error: any) => {
-        setIsGenerating(false);
-        toast({
-          title: "Region Not Supported",
-          description: error?.message || "Only Los Angeles and California are supported at the moment.",
-          variant: "destructive",
-        });
-      }
-    });
+    createGuideMutation.mutate({ city, days, pace, prompt: prompt.trim(), diet: diet || null, interests: [] });
   };
 
   const handleCloseGeneratedGuide = () => {
@@ -128,44 +117,43 @@ const AIGuideSection = () => {
   };
 
   const renderGuideContent = (guide: TravelGuide) => {
-    const content = JSON.parse(guide.content);
+    const content = safeParseGuide(guide.content);
+    if (!content) {
+      return <p className="mt-4 text-destructive">This guide could not be displayed.</p>;
+    }
     return (
       <div className="space-y-6 mt-4">
-        {content.days?.map((day: any, index: number) => (
+        {content.summary && <p className="text-muted-foreground">{content.summary}</p>}
+        {content.days.map((day, index) => (
           <Card key={index} className="p-6">
             <h3 className="text-xl font-semibold mb-4">{day.title}</h3>
             <div className="space-y-4">
-              {day.activities?.map((activity: any, actIndex: number) => (
-                <div key={actIndex} className="border-l-4 border-primary/20 pl-4">
-                  <p className="font-semibold text-primary">{activity.time}</p>
-                  <p className="text-lg">{activity.activity}</p>
-                  <p className="text-sm text-gray-600">{activity.location}</p>
-                  {activity.notes && (
-                    <p className="text-sm text-gray-500 mt-1">{activity.notes}</p>
-                  )}
+              {day.items.map((item, i) => (
+                <div key={i} className="border-l-4 border-primary/20 pl-4">
+                  <p className="font-semibold text-primary capitalize">{item.time}</p>
+                  <p className="text-lg">{item.name}</p>
+                  {item.meta && <p className="text-sm text-muted-foreground">{item.meta}</p>}
+                  {item.notes && <p className="text-sm text-muted-foreground mt-1">{item.notes}</p>}
+                  {item.co2 && <p className="text-xs text-primary mt-1">{item.co2}</p>}
                 </div>
               ))}
             </div>
           </Card>
         ))}
-        {content.recommendations && (
-          <div className="space-y-6">
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
-              <div className="grid gap-6">
-                {Object.entries(content.recommendations).map(([key, values]: [string, any]) => (
-                  <div key={key}>
-                    <h4 className="text-lg font-medium capitalize mb-2">{key}</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {values.map((item: string, index: number) => (
-                        <li key={index} className="text-gray-600">{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
+        {content.recommendations.length > 0 && (
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
+            <div className="grid gap-6">
+              {content.recommendations.map(([key, values]) => (
+                <div key={key}>
+                  <h4 className="text-lg font-medium capitalize mb-2">{key}</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {values.map((v, i) => <li key={i} className="text-muted-foreground">{v}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Card>
         )}
       </div>
     );
@@ -191,9 +179,45 @@ const AIGuideSection = () => {
             placeholder={placeholder}
             className="pl-4 pr-4 py-6 text-lg rounded-xl border-2 border-primary/20 focus:border-primary/40 transition-colors bg-white text-gray-900"
             onFocus={rotateExample}
+            maxLength={500}
             disabled={isGenerating}
           />
         </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <select aria-label="City" value={city} onChange={(e) => setCity(e.target.value as GuideCity)} disabled={isGenerating}
+            className="h-11 rounded-xl border-2 border-primary/20 bg-background px-3 text-foreground">
+            {GUIDE_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select aria-label="Days" value={days} onChange={(e) => setDays(Number(e.target.value))} disabled={isGenerating}
+            className="h-11 rounded-xl border-2 border-primary/20 bg-background px-3 text-foreground">
+            {[1, 2, 3, 4, 5].map((d) => <option key={d} value={d}>{d} day{d > 1 ? "s" : ""}</option>)}
+          </select>
+          <select aria-label="Pace" value={pace} onChange={(e) => setPace(e.target.value as GuidePace)} disabled={isGenerating}
+            className="h-11 rounded-xl border-2 border-primary/20 bg-background px-3 text-foreground">
+            <option value="relaxed">Relaxed pace</option>
+            <option value="balanced">Balanced pace</option>
+            <option value="packed">Packed pace</option>
+          </select>
+          <select aria-label="Diet" value={diet} onChange={(e) => setDiet(e.target.value)} disabled={isGenerating}
+            className="h-11 rounded-xl border-2 border-primary/20 bg-background px-3 text-foreground">
+            <option value="">Any diet</option>
+            <option value="vegan">Vegan</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="pescatarian">Pescatarian</option>
+            <option value="gluten-free">Gluten-free</option>
+          </select>
+        </div>
+        {errorMsg && (
+          <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+            {errorMsg}{" "}
+            {!user && <Link to="/auth" className="underline font-medium">Sign in</Link>}
+          </div>
+        )}
+        {isGenerating && (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Choosing verified places from our catalog… this can take up to a minute.
+          </p>
+        )}
         <Button 
           type="submit" 
           className="w-full py-6 text-lg rounded-xl bg-primary hover:bg-primary/90 transition-colors text-white"

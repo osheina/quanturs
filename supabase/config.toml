@@ -24,3 +24,6 @@
 #   verify_jwt = true
 #   [functions.another-function.secrets]
 #   SECRET_NAME = "env_var_name" # Set the secret value in Project Settings > Functions > Secrets
+
+[functions.generate-itinerary]
+  verify_jwt = false

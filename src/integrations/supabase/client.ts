@@ -2,8 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://pciobrhrmhpqmthixvcb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjaW9icmhybWhwcW10aGl4dmNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzODEzMjUsImV4cCI6MjA2MDk1NzMyNX0.q6-zzSPrd0BDJ7SG2O17m6zwsj6iDJ09bJBet-up0aA";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://pciobrhrmhpqmthixvcb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjaW9icmhybWhwcW10aGl4dmNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzODEzMjUsImV4cCI6MjA2MDk1NzMyNX0.q6-zzSPrd0BDJ7SG2O17m6zwsj6iDJ09bJBet-up0aA";
 
 // Log environment variables (without exposing the full key)
 console.log('Supabase URL:', SUPABASE_URL);
