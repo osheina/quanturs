@@ -1,3 +1,3 @@
-- [ ] Restyle existing homepage, auth and real content as an editorial travel journal without changing routes or Supabase behavior.
-- [ ] Connect mood selections and clickable examples to actual itinerary creation, with clear account and success states.
-- [ ] Verify mobile/desktop interactions and available checks; report preview and revision without publishing.
+- [x] Restyle existing homepage, auth and real content as an editorial travel journal without changing routes or Supabase behavior.
+- [x] Connect mood selections and clickable examples to actual itinerary creation, with clear account and success states.
+- [x] Verify mobile/desktop interactions and available checks; report preview and revision without publishing.
