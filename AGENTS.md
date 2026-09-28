@@ -1,2 +1,3 @@
 - Keep the existing React routes and Supabase guide generation as the source of truth; editorial UI changes must not create mock itineraries.
 - Define visual colors in global semantic CSS tokens and consume them through Tailwind roles; this keeps controls and themes coherent.
+- Use Manrope for display/headings and DM Sans for body/UI without serif or italic emphasis; this preserves a consistent, legible minimalist hierarchy.

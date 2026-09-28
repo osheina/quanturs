@@ -7,19 +7,19 @@ const TestimonialsSection = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          <p className="text-gray-600 italic mb-4">
+          <p className="text-gray-600 mb-4">
             "The AI-powered recommendations were spot-on! Found amazing vegan restaurants I wouldn't have discovered otherwise."
           </p>
           <p className="font-semibold">- Sarah M.</p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          <p className="text-gray-600 italic mb-4">
+          <p className="text-gray-600 mb-4">
             "Virtual tours helped me plan my trip better. It's like being there before actually going!"
           </p>
           <p className="font-semibold">- James R.</p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          <p className="text-gray-600 italic mb-4">
+          <p className="text-gray-600 mb-4">
             "Love how easy it is to find eco-friendly accommodations. Makes sustainable travel so much simpler."
           </p>
           <p className="font-semibold">- Emma L.</p>

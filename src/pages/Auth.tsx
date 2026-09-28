@@ -110,7 +110,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4"><a href="/" className="editorial-serif mb-8 text-4xl font-semibold text-primary">Quanturs<span className="text-accent">.</span></a>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4"><a href="/" className="font-heading mb-8 text-3xl font-bold text-primary">Quanturs<span className="text-accent">.</span></a>
       <Card className="w-full max-w-md rounded-sm border-border bg-card shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">
