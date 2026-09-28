@@ -8,8 +8,8 @@ interface RestaurantCardProps {
   image: string | null; // Разрешаем null для изображения
   name: string;
   cuisine: string;
-  rating: number;
-  priceRange: string;
+  rating?: number;
+  priceRange?: string;
   description: string;
   location: string;
   co2_kg?: number;
@@ -51,17 +51,17 @@ const RestaurantCard = ({ image, name, cuisine, rating, priceRange, description,
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between mb-1">
           <CardTitle className="text-xl font-bold">{name}</CardTitle>
-          <Badge variant="outline" className="flex items-center gap-1 rounded-sm">
+          {priceRange && <Badge variant="outline" className="flex items-center gap-1 rounded-sm">
             <BadgeDollarSign className="w-4 h-4" />
             {priceRange}
-          </Badge>
+          </Badge>}
         </div>
         <CardDescription className="flex items-center justify-between">
           <span className="text-sm font-medium">{cuisine}</span>
-          <span className="flex items-center gap-1">
+          {rating !== undefined && <span className="flex items-center gap-1">
             <Star className="w-4 h-4 fill-accent text-accent" />
             <span className="font-semibold">{rating}</span>
-          </span>
+          </span>}
         </CardDescription>
         <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
           <MapPin className="w-4 h-4 text-muted-foreground" />

@@ -109,8 +109,6 @@ const SearchBar = () => {
                         image={p.image_url}
                         name={p.name ?? ""}
                         cuisine={p.type ?? "Unknown Type"} // Use type as cuisine
-                        rating={4.5} // Placeholder
-                        priceRange="$$$" // Placeholder
                         description={p.notes ?? ""}
                         location={p.location ?? ""}
                         co2_kg={p.co2_kg ?? undefined}
