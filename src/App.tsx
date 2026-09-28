@@ -16,7 +16,7 @@ const App = () => {
       <AuthProvider>
         <BrowserRouter>
           <TooltipProvider>
-            <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#F2FCE2] to-[#E5DEFF]">
+            <div className="min-h-screen flex flex-col bg-background">
               <main className="flex-1">
                 <Routes>
                   <Route path="/" element={<Index />} />

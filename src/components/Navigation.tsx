@@ -1,27 +1,16 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { UserMenu } from "./UserMenu";
 
-const Navigation = () => {
-  return (
-    <header className="py-4 px-6 bg-white shadow-sm">
-      <nav className="container mx-auto flex justify-between items-center">
-        <div className="text-xl font-bold text-primary">
-          <Link to="/">Quanturs</Link>
-        </div>
-        <div className="flex items-center gap-6">
-          <ul className="flex space-x-6">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Home
-              </Link>
-            </li>
-          </ul>
-          <UserMenu />
-        </div>
-      </nav>
-    </header>
-  );
-};
-
+const Navigation = () => (
+  <header className="border-b border-border bg-background">
+    <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-6 py-4 md:px-10" aria-label="Main navigation">
+      <Link to="/" className="editorial-serif text-3xl font-semibold leading-none text-primary">Quanturs<span className="text-accent">.</span></Link>
+      <div className="flex items-center gap-3 sm:gap-7">
+        <a href="/#create-guide" className="hidden text-sm font-medium hover:text-accent sm:inline">Plan a trip</a>
+        <a href="/#explore" className="hidden text-sm font-medium hover:text-accent sm:inline">Explore</a>
+        <UserMenu />
+      </div>
+    </nav>
+  </header>
+);
 export default Navigation;

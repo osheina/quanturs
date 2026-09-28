@@ -2,47 +2,33 @@ import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import AIGuideSection from '@/components/AIGuideSection';
 import MainContent from '@/components/MainContent';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import { vrExperiences } from '@/data/vrExperiences';
-import VRExperienceCard from '@/components/VRExperienceCard';
+import SearchBar from '@/components/SearchBar';
 
-const getImageUrl = (type: string) => {
-  switch (type) {
-    case 'cafe':
-      return 'https://source.unsplash.com/800x600/?vegan,cafe,brunch';
-    case 'hotel':
-      return 'https://source.unsplash.com/800x600/?eco,hotel,retreat';
-    case 'park':
-      return 'https://source.unsplash.com/800x600/?hidden,trail,park';
-    case 'market':
-      return 'https://source.unsplash.com/800x600/?organic,market,local';
-    default:
-      return 'https://source.unsplash.com/800x600/?travel,nature';
-  }
-};
-
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <Navigation />
-      <HeroSection />
+const Index = () => (
+  <div className="min-h-screen bg-background">
+    <Navigation />
+    <HeroSection />
+    <main>
       <AIGuideSection />
-      <MainContent />
-
-      {/* VR Experiences Section */}
-      <section className="container mx-auto py-12 px-4 text-center">
-        <h2 className="text-3xl font-bold mb-4">Immersive VR Experiences</h2>
-        <p className="text-gray-600 text-lg">
-          Interactive Previews —{' '}
-          <span className="text-green-500 font-bold">Coming Soon</span> ✨
-        </p>
+      <section id="explore" className="border-t border-border px-6 py-16 md:px-10 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">FIELD NOTES / 02</p>
+          <div className="mt-3 grid gap-5 border-b border-border pb-8 md:grid-cols-[1fr_1fr] md:items-end">
+            <h2 className="text-5xl leading-none md:text-6xl">Find your kind of place.</h2>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">Search the catalog, then browse stays, dining, and things to do.</p>
+          </div>
+          <div className="mt-8"><SearchBar /></div>
+        </div>
       </section>
-
-      {/* Sustainability Impact Section has been removed */}
-
-      <TestimonialsSection />
-    </div>
-  );
-};
-
+      <MainContent />
+      <section className="border-t border-border px-6 py-12 md:px-10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-3xl md:text-4xl">Immersive VR Experiences</h2>
+          <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Interactive previews · Coming soon</p>
+        </div>
+      </section>
+    </main>
+    <footer className="border-t border-border px-6 py-6 text-sm text-muted-foreground md:px-10"><div className="mx-auto flex max-w-7xl items-center justify-between"><span className="editorial-serif text-2xl text-foreground">Quanturs.</span><span>Travel with intention.</span></div></footer>
+  </div>
+);
 export default Index;

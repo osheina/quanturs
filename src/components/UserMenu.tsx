@@ -27,7 +27,7 @@ export function UserMenu() {
         variant="outline" 
         size="sm" 
         onClick={() => navigate('/auth')}
-        className="border-green-600 text-green-700 hover:bg-green-50"
+        className="border-primary text-primary hover:bg-secondary"
       >
         <LogIn className="mr-2 h-4 w-4" />
         Sign in
