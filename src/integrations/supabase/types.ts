@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      guide_generation_requests: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quanturs_places: {
         Row: {
           city: string | null
