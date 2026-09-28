@@ -215,7 +215,7 @@ const AIGuideSection = () => {
         )}
         {isGenerating && (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Choosing verified places from our catalog… this can take up to a minute.
+            <Loader2 className="h-4 w-4 animate-spin" /> Choosing places from our catalog… this can take up to a minute.
           </p>
         )}
         <Button 
