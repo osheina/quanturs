@@ -11,6 +11,7 @@ import {
   rankPlaces,
   requiredStops,
   STOPS_PER_DAY,
+  validateAIItinerary,
 } from "./itinerary.ts";
 
 const MODEL = "openai/gpt-6-astra";
@@ -153,7 +154,6 @@ Deno.serve(async (req) => {
       buildCatalogPrompt(offered),
     ].join("\n");
 
-    const { validateAIItinerary } = await import("./itinerary.ts");
     const aiText = await callAI(AI_KEY, instructions, input, req.signal);
     const guide = validateAIItinerary(aiText, offered, gr);
 
